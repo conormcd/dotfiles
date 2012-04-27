@@ -1,0 +1,18 @@
+[submodule ".vim/pathogen"]
+	path = .vim/pathogen
+	url = git://github.com/tpope/vim-pathogen.git
+[submodule ".vim/bundle/matchindent.vim"]
+	path = .vim/bundle/matchindent.vim
+	url = git://github.com/conormcd/matchindent.vim.git
+[submodule ".vim/bundle/mustache.vim"]
+	path = .vim/bundle/mustache.vim
+	url = git://github.com/juvenn/mustache.vim.git
+[submodule ".vim/bundle/vim-background-make"]
+	path = .vim/bundle/vim-background-make
+	url = git://github.com/gfxmonk/vim-background-make.git
+[submodule ".vim/bundle/vim-javascript"]
+	path = .vim/bundle/vim-javascript
+	url = git://github.com/pangloss/vim-javascript.git
+[submodule ".vim/bundle/vim-markdown"]
+	path = .vim/bundle/vim-markdown
+	url = git://github.com/tpope/vim-markdown.git
