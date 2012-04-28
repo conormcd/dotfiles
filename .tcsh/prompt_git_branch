@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Figure out what branch we're on and who owns "origin"
+BRANCH_NAME=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/^..//'`
+CHECKOUT_OWNER=`git remote -v 2> /dev/null | grep '^origin.*fetch' | cut -d: -f2 | cut -d / -f1`
+
+# Bail out if we don't have a valid branch
+if [ "X${BRANCH_NAME}X" == "XX" ]; then
+	exit 0
+fi
+
+# Figure out the colour we should print the branch name in
+BRANCH_COLOUR="31;48"
+if [ "X${CHECKOUT_OWNER}X" == "XconormcdX" ]; then
+	if [ "X${BRANCH_NAME}X" != "XmasterX" ]; then
+		BRANCH_COLOUR="32;48"
+	fi
+fi
+BRANCH_COLOUR="%{^[[${BRANCH_COLOUR}m%}"
+
+# Print the full prompt chunk
+echo "${BRANCH_COLOUR}${BRANCH_NAME}%{^[[1;37m%} "

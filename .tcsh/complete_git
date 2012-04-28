@@ -1,0 +1,79 @@
+#!/usr/bin/perl
+# Generate a chunk of potential git commands for tcsh completion.
+
+use strict;
+use warnings;
+
+my $c = $ENV{'COMMAND_LINE'};
+
+my @commands = (
+	'git add',
+	'git branch',
+	'git checkout',
+	'git clone',
+	'git clone git@github.com:',
+	'git clone https://github.com/',
+	'git clone git://github.com/',
+	'git commit',
+	'git diff',
+	'git fetch',
+	'git init',
+	'git log',
+	'git mv',
+	'git pull',
+	'git push',
+	'git push -fu',
+	'git rebase',
+	'git remote',
+	'git reset',
+	'git revert',
+	'git rm',
+	'git status',
+	'git submodule',
+	'git wip',
+);
+
+my @remotes;
+my @branches;
+if (open(GIT, "git remote 2> /dev/null |")) {
+	while (<GIT>) {
+		chomp;
+		push @remotes, $_;
+	}
+	close(GIT);
+}
+if (open(GIT, "git branch --no-color 2> /dev/null |")) {
+	while (<GIT>) {
+		chomp;
+		s/^..//;
+		push @branches, $_;
+	}
+}
+
+foreach my $remote (@remotes) {
+	foreach my $branch (@branches) {
+		push @commands, "git pull $remote $branch";
+		push @commands, "git pull --rebase $remote $branch";
+		push @commands, "git push $remote $branch";
+		push @commands, "git push -fu $remote $branch";
+	}
+}
+foreach my $branch (@branches) {
+	push @commands, "git checkout $branch";
+}
+
+my %completions;
+foreach my $possible (@commands) {
+	if ($possible =~ /^$c/) {
+		my $head = $c;
+		if ($head !~ /\s$/o) {
+			$head =~ s/\s\S+$//o;
+		}
+		my $completion = $possible;
+		$completion =~ s/^$head\s*//;
+		$completion =~ s/\s.*$//o;
+		$completions{$completion} = 1;
+	}
+}
+my @completions = keys %completions;
+print "@completions\n";

@@ -1,0 +1,85 @@
+# ex: syntax=csh
+
+umask 022
+
+# Make sure the path covers everything
+set path = (/sbin /bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /opt/local/sbin /opt/local/bin)
+
+# Environment variables go here
+setenv	BLOCKSIZE	K
+setenv	EDITOR		vim
+setenv	LANG		en_IE.UTF-8
+
+# Do stuff for interactive shells
+if ($?prompt) then
+	unset autolist
+	set color
+	set filec
+	set history = 100
+	set nobeep
+	set noding
+	set prompt="%B%T [%c]%#%b "
+	set promptchars=">#"
+	set savehist
+	set symlinks = (ignore)
+	set time = (30, "Time taken: %E (%P)")
+	set watch = (1 any any)
+	set who = "%n has %a from %M"
+
+	alias	ls					ls -Gh
+	alias	precmd				'set prompt="%B%T [`~/.tcsh/prompt_git_branch`%c]%#%b "'
+
+	bindkey "^W" backward-delete-word
+	bindkey -k up history-search-backward
+	bindkey -k down history-search-forward
+	bindkey	-c	"^[[15~"	"source ~/.tcshrc; clear"
+
+	# Make the stupid Mac do proper backspacing
+	stty erase  
+
+	# Generate a list of known hosts for completion purposes.
+	set hosts = ( )
+	if ( -r $HOME/.ssh/known_hosts ) then
+		set hosts=($hosts `cut -d" " -f1 $HOME/.ssh/known_hosts | cut -d, -f1`)
+	endif
+
+	#
+	# Completions in alphabetical order by command
+	#
+	complete	ant			'p#1#`ant -p | perl -ne "chomp; next unless /^\s/o; s/^\s+(\S+)\s+.*/\1 /o; print"`#'
+	complete	cd			'p#1#d:^CVS#'
+	complete	git			'n/add/f/' \
+							'n/diff/f/' \
+							'n/mv/f/' \
+							'n/rm/f/' \
+							'C@*@`${HOME}/.tcsh/complete_git`@'
+	complete	ping		"p/1/($hosts)/"
+	complete	scp			'c%*@*:%`set q=$:-0; \
+									 set q="$q:s/@/ /"; \
+									 set q="$q:s/:/ /"; \
+									 set q=($q " "); \
+									 ssh $q[2] -l $q[1] ls -dp $q[3]\*`%' \
+							'c%*:%`set q=$:-0; \
+								   set q="$q:s/:/ /"; \
+								   set q=($q " "); \
+								   ssh $q[1] ls -dp $q[2]\*`%' \
+							"c%*@%($hosts)%:" \
+							'C@[./$~]*@f@' \
+							"n/*/($hosts)/:"
+	complete	ssh			"c/*@/($hosts)/ /" \
+							"p/1/($hosts)/ /"
+	complete	sudo		'n/sudo/c/'
+	complete	traceroute	"p/1/($hosts)/"
+	complete	vim			'n/*/f:/'
+
+	#
+	# Clean up after completion
+	#
+	unset hosts
+endif
+
+# Make sure the cache of commands is up to date
+# This is irrelevant if you've just logged in, but if
+# this file is being sourced at any other time this may
+# be helpful.
+rehash
