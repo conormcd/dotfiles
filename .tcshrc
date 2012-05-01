@@ -26,8 +26,20 @@ if ($?prompt) then
 	set watch = (1 any any)
 	set who = "%n has %a from %M"
 
-	alias	ls					ls -Gh
-	alias	precmd				'set prompt="%B%T [`~/.tcsh/prompt_git_branch`%c]%#%b "'
+	# Different versions of ls take different hints to colorize their output
+	ls --color=auto >& /dev/null
+	if ( $? != 0 ) then
+		alias ls ls -Gh
+	else
+		alias ls ls --color=auto --human-readable
+	endif
+
+	# Include the git branch in the prompt
+	if ( `hostname` == 'mcdermottr.vm.bytemark.co.uk' ) then
+		alias	precmd 'set prompt="%B%{^[[1;34m%}%T [%{^[[1;37m%}`~/.tcsh/prompt_git_branch`%{^[[1;34m%}%c]%#%{^[[1;37m%}%b "'
+	else
+		alias	precmd 'set prompt="%B%T [`~/.tcsh/prompt_git_branch`%c]%#%b "'
+	endif
 
 	bindkey "^W" backward-delete-word
 	bindkey -k up history-search-backward
