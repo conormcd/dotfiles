@@ -1,7 +1,10 @@
 ROOT := $(shell pwd)
 SYMLINK := ln -fns
 
-all: tcsh vim
+all: mutt tcsh vim
+
+mutt:
+	$(SYMLINK) $(ROOT)/.muttrc $(HOME)/.muttrc
 
 tcsh:
 	$(SYMLINK) $(ROOT)/.tcsh $(HOME)/.tcsh
