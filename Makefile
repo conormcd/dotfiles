@@ -1,7 +1,11 @@
 ROOT := $(shell pwd)
 SYMLINK := ln -fns
 
-all: mutt tcsh vim
+all: bin mutt tcsh vim
+
+bin:
+	mkdir -p $(HOME)/bin
+	$(SYMLINK) $(ROOT)/modules/git-wip/git-wip $(HOME)/bin/git-wip
 
 mutt:
 	$(SYMLINK) $(ROOT)/.muttrc $(HOME)/.muttrc

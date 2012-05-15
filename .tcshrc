@@ -3,7 +3,7 @@
 umask 022
 
 # Make sure the path covers everything
-set path = (/sbin /bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /opt/local/sbin /opt/local/bin)
+set path = (/sbin /bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /opt/local/sbin /opt/local/bin ~/bin)
 
 # Environment variables go here
 setenv	BLOCKSIZE	K
