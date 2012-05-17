@@ -3,7 +3,18 @@
 umask 022
 
 # Make sure the path covers everything
-set path = (/sbin /bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /opt/local/sbin /opt/local/bin ~/bin)
+set path = ( /sbin /bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin )
+set potential_extra_path_dirs = ( \
+	/opt/local/sbin \
+	/opt/local/bin \
+	~/bin \
+	/usr/local/texlive/*/bin/x86_64-darwin \
+)
+foreach dir ( $potential_extra_path_dirs )
+	if ( -d $dir ) then
+		set path = ( $path $dir )
+	endif
+end
 
 # Environment variables go here
 setenv	BLOCKSIZE	K
