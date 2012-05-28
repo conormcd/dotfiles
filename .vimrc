@@ -30,6 +30,9 @@ set viminfo='20,\"50		" Use a viminfo file (remember 20 files, 50 lines)
 " Make smartindent stop outdenting lines beginning with #
 inoremap # X#
 
+" F keys
+nmap <F8> :TagbarToggle<CR>
+
 " Set some syntax highlighting options.
 let c_space_errors = 1
 let java_allow_cpp_keywords = 1

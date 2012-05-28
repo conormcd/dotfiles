@@ -25,3 +25,6 @@
 [submodule "modules/git-wip"]
 	path = modules/git-wip
 	url = git://github.com/conormcd/git-wip.git
+[submodule ".vim/bundle/tagbar"]
+	path = .vim/bundle/tagbar
+	url = https://github.com/majutsushi/tagbar.git
