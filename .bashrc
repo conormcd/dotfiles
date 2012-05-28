@@ -67,7 +67,6 @@ rebuild_prompt() {
     fi
 
     # Make a colored git branch for inclusion in the prompt
-    #branch=$(git symbolic-ref HEAD 2> /dev/null | sed -e 's|^refs/heads/||')
     branch=$(__git_ps1 '%s')
     remote=$(git remote -v 2> /dev/null | grep '^origin.*fetch')
     if [[ ${remote} =~ "github" ]]; then
