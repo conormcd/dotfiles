@@ -11,7 +11,7 @@ PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
 typeset -a potential_extra_dirs=( \
     /opt/local/sbin \
     /opt/local/bin \
-    `find /usr/local -type d -path '*/texlive/*/bin/x86_64-darwin' -maxdepth 4` \
+    `find /usr/local -maxdepth 4 -type d -path '*/texlive/*/bin/x86_64-darwin'` \
     ~/bin \
     ~/.rvm/bin \
 )
