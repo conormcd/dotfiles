@@ -3,7 +3,7 @@
 umask 022
 
 # Make sure the path covers everything
-set path = ( /sbin /bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin )
+set path = ( /usr/local/sbin /usr/local/bin /sbin /bin /usr/sbin /usr/bin )
 set potential_extra_path_dirs = ( \
 	/opt/local/sbin \
 	/opt/local/bin \
