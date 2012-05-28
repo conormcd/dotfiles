@@ -1,7 +1,12 @@
 ROOT := $(shell pwd)
 SYMLINK := ln -fns
 
-all: bin mutt tcsh vim
+all: bash bin mutt tcsh vim
+
+bash:
+	$(SYMLINK) $(ROOT)/.bash_login $(HOME)/.bash_login
+	$(SYMLINK) $(ROOT)/.bashrc $(HOME)/.bashrc
+	$(SYMLINK) $(ROOT)/.inputrc $(HOME)/.inputrc
 
 bin:
 	mkdir -p $(HOME)/bin
