@@ -43,6 +43,7 @@ let jproperties_show_messages = 1
 let php_sql_query = 1
 let php_htmlInStrings = 1
 let python_highlight_all = 1
+let is_posix = 1
 	
 " Highlight trailing whitespace
 highlight TrailingWhitespace ctermbg=red guibg=red
