@@ -1,0 +1,13 @@
+[user]
+	name = Conor McDermottroe
+	email = ___EMAIL___
+[color]
+	ui = auto
+[branch]
+	autosetuprebase = always
+[core]
+	quotepath = false
+[help]
+	autocorrect = 1
+[rerere]
+	enabled = 1
