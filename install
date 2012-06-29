@@ -1,0 +1,114 @@
+#!/bin/sh
+
+set -o errexit
+set -o nounset
+
+BREW_TAPS="adamv/alt homebrew/dupes homebrew/versions josegonzalez/php"
+OS=$(uname -s)
+
+# Get the full path to the current directory.
+cwd=$(pwd)
+cd $(dirname $0)
+root=$(pwd)
+cd ${cwd}
+
+# Symlink a bash completion file
+bash_completion() {
+  completion_file=$1
+  completion_dir=/etc/bash_completion.d
+  if which brew > /dev/null 2>&1; then
+    completion_dir="$(brew --prefix)${completion_dir}"
+  fi
+  symlink ${completion_file} ${completion_dir}/$(basename ${completion_file})
+}
+
+# Print the command we're going to run and (if DRY_RUN is not set) run it.
+cmd() {
+  echo $*
+  [ ${DRY_RUN:-unset} = "unset" ] && $*
+}
+
+# Ensure a package is installed
+pkg() {
+  for package_name in $*; do
+    case ${OS} in
+      (Darwin)
+        if ! which brew > /dev/null 2>&1; then
+          cmd ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
+          for tap in ${BREW_TAPS}; do
+            if [ "$(brew tap | grep ${tap})" != "${tap}" ]; then
+              cmd brew tap ${tap}
+            fi
+          done
+        fi
+        if ! brew list ${package_name} > /dev/null; then
+          cmd brew install ${package_name}
+        fi
+        ;;
+      (Linux)
+        if [ -f /etc/debian_version ]; then
+          case ${package_name} in
+            (ctags)
+              package_name="exuberant-ctags"
+              ;;
+          esac
+          if ! dpkg -s ${package_name} > /dev/null 2>&1; then
+            cmd sudo aptitude install ${package_name}
+          fi
+        else
+          echo "Unsupported Linux variant."
+          exit 1
+        fi
+        ;;
+    esac
+  done
+}
+
+# Symlink a file from this repo.
+symlink() {
+  file=$1
+  if [ $# -gt 1 ]; then
+    target=$2
+    if [ "$(echo ${target} | grep ^/)" != "${target}" ]; then
+      target=${HOME}/${target}
+    fi
+  else
+    target=${HOME}/${file}
+  fi
+  if [ "$(echo ${file} | grep ^/)" != "${file}" ]; then
+    file="${root}/${file}"
+  fi
+  if [ ! -L ${target} ] || [ $(readlink ${target}) != ${file} ]; then
+    cmd ln -fns ${file} ${target}
+  fi
+}
+
+#
+# Now work through all the things we need.
+#
+
+# Install the packages we need
+pkg bash bash-completion ctags git nmap vim wget
+[ ${OS} = "Darwin" ] && pkg hub nginx php ruby
+[ ${OS} != "Darwin" ] && pkg mutt
+
+# Generate .gitconfig
+sed -e s/___EMAIL___/$(git config user.email || echo conor@mcdermottroe.com)/ ${root}/.gitconfig.template > ${root}/.gitconfig
+
+# Now link in the dotfiles
+symlink .bash_login
+symlink .bashrc
+symlink .gitconfig
+symlink .inputrc
+[ ${OS} != "Darwin" ] && symlink .muttrc
+symlink .tcsh
+symlink .tcshrc
+symlink .vim
+symlink .vimrc
+
+# Extra bash completions
+bash_completion modules/vagrant-bash-completion/vagrant
+
+# Sort out the bin directory
+[ -d ${HOME}/bin ] || cmd mkdir ${HOME}/bin
+symlink modules/git-wip/git-wip bin/git-wip
