@@ -33,6 +33,7 @@ pkg() {
   for package_name in $*; do
     case ${OS} in
       (Darwin)
+        # Make sure homebrew is installed
         if ! which brew > /dev/null 2>&1; then
           cmd ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
           for tap in ${BREW_TAPS}; do
@@ -41,9 +42,44 @@ pkg() {
             fi
           done
         fi
-        if ! brew list ${package_name} > /dev/null; then
-          cmd brew install ${package_name}
-        fi
+
+        # Adjust the installer, package name and/or compile flags if necessary.
+        installer="brew"
+        flags=""
+        case ${package_name} in
+          (php)
+            package_name=php54
+            flags="--with-mysql --with-pgsql --with-fpm --with-intl"
+            ;;
+          (vagrant)
+            installer="gem"
+            ;;
+        esac
+
+        # Trigger the install
+        case ${installer} in
+          (brew)
+            if ! brew list ${package_name} > /dev/null; then
+              cmd brew install ${package_name} ${flags}
+            fi
+            ;;
+          (gem)
+            # Make sure the Homebrew ruby is installed first.
+            if ! brew list ruby > /dev/null; then
+              cmd brew install ruby
+            fi
+
+            # Now install the gem if necessary
+            if [ "$(gem list ${package_name} | grep ${package_name})" = "" ]; then
+              cmd gem install ${package_name}
+            fi
+            ;;
+          (*)
+            # This should be unreachable.
+            echo "Invalid installer: ${installer}"
+            exit 1
+            ;;
+        esac
         ;;
       (Linux)
         if [ -f /etc/debian_version ]; then
@@ -89,7 +125,7 @@ symlink() {
 
 # Install the packages we need
 pkg bash bash-completion ctags git nmap vim wget
-[ ${OS} = "Darwin" ] && pkg hub nginx php ruby
+[ ${OS} = "Darwin" ] && pkg hub nginx php ruby vagrant
 [ ${OS} != "Darwin" ] && pkg mutt
 
 # Generate .gitconfig
