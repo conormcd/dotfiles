@@ -125,7 +125,7 @@ symlink() {
 
 # Install the packages we need
 pkg bash bash-completion ctags git nmap vim wget
-[ ${OS} = "Darwin" ] && pkg hub nginx php ruby vagrant
+[ ${OS} = "Darwin" ] && pkg fontforge hub nginx php ruby vagrant
 [ ${OS} != "Darwin" ] && pkg mutt
 
 # Generate .gitconfig
