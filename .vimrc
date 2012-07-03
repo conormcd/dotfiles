@@ -13,6 +13,7 @@ set encoding=utf-8			" Try and keep things away from funny encodings
 set history=500				" Keep 500 lines of command line history
 set hlsearch				" Highlight searches
 set incsearch				" Incremental search
+set laststatus=2			" Always show the status line.
 set modelines=10			" Search the first 10 lines for modes
 set mouse=a					" Make the mouse work in all modes
 set noexpandtab
