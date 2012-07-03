@@ -134,6 +134,7 @@ sed -e s/___EMAIL___/$(git config user.email || echo conor@mcdermottroe.com)/ ${
 # Now link in the dotfiles
 symlink .bash_login
 symlink .bashrc
+symlink .cvsignore
 symlink .gitconfig
 symlink .inputrc
 [ ${OS} != "Darwin" ] && symlink .muttrc
