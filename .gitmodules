@@ -28,9 +28,6 @@
 [submodule ".vim/bundle/tagbar"]
 	path = .vim/bundle/tagbar
 	url = https://github.com/majutsushi/tagbar.git
-[submodule "modules/vagrant-bash-completion"]
-	path = modules/vagrant-bash-completion
-	url = git://github.com/kura/vagrant-bash-completion.git
 [submodule ".vim/bundle/vim-commentary"]
 	path = .vim/bundle/vim-commentary
 	url = git://github.com/tpope/vim-commentary.git
@@ -46,3 +43,6 @@
 [submodule ".vim/bundle/vim-git"]
 	path = .vim/bundle/vim-git
 	url = git://github.com/tpope/vim-git.git
+[submodule "modules/vagrant-bash-completion"]
+	path = modules/vagrant-bash-completion
+	url = git://github.com/conormcd/vagrant-bash-completion.git
