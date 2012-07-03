@@ -46,8 +46,11 @@ let php_htmlInStrings = 1
 let python_highlight_all = 1
 let is_posix = 1
 
-" Use powerline symbols
+" Powerline customization
 let g:Powerline_symbols = 'fancy'
+call Pl#Theme#RemoveSegment('fileformat')
+call Pl#Theme#RemoveSegment('fileencoding')
+call Pl#Theme#RemoveSegment('filetype')
 	
 " Highlight trailing whitespace
 highlight TrailingWhitespace ctermbg=red guibg=red
