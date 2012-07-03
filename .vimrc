@@ -45,6 +45,9 @@ let php_sql_query = 1
 let php_htmlInStrings = 1
 let python_highlight_all = 1
 let is_posix = 1
+
+" Use powerline symbols
+let g:Powerline_symbols = 'fancy'
 	
 " Highlight trailing whitespace
 highlight TrailingWhitespace ctermbg=red guibg=red
