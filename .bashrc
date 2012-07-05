@@ -26,6 +26,7 @@ BLOCKSIZE=K
 EDITOR=vim
 HISTFILE="${HOME}/.history"
 LANG=en_IE.UTF-8
+LC_COLLATE=C
 
 # Include completion files
 if [[ -f /etc/bash_completion ]]; then
