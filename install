@@ -129,13 +129,12 @@ pkg bash bash-completion ctags git nmap vim wget
 [ ${OS} != "Darwin" ] && pkg mutt
 
 # Generate .gitconfig
-sed -e s/___EMAIL___/$(git config user.email || echo conor@mcdermottroe.com)/ ${root}/.gitconfig.template > ${root}/.gitconfig
+sed -e s/___EMAIL___/$(git config user.email || echo conor@mcdermottroe.com)/ ${root}/.gitconfig.template > ${HOME}/.gitconfig
 
 # Now link in the dotfiles
 symlink .bash_login
 symlink .bashrc
 symlink .cvsignore
-symlink .gitconfig
 symlink .inputrc
 [ ${OS} != "Darwin" ] && symlink .muttrc
 symlink .tcsh
