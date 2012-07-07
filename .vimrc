@@ -51,6 +51,9 @@ let g:Powerline_symbols = 'fancy'
 call Pl#Theme#RemoveSegment('fileformat')
 call Pl#Theme#RemoveSegment('fileencoding')
 call Pl#Theme#RemoveSegment('filetype')
+
+" Turn on spell checking
+setlocal spell spelllang=en_gb
 	
 " Highlight trailing whitespace
 highlight TrailingWhitespace ctermbg=red guibg=red
