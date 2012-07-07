@@ -1,9 +1,10 @@
-set nocompatible			" Make Vim not act like vi
+set nocompatible				" Make Vim not act like vi
 
-call pathogen#infect()		" Load all the things in .vimrc/bundle
-call pathogen#helptags()	" Generate all the docs
-filetype plugin indent on	" Use the filetype detection magic
-syntax on					" Switch syntax highlighting on
+call pathogen#infect()			" Load all the things in .vimrc/bundle
+call pathogen#helptags()		" Generate all the docs
+filetype plugin indent on		" Use the filetype detection magic
+syntax on						" Switch syntax highlighting on
+set ofu=syntaxcomplete#Complete	" Use omnicomplete
 
 set autoindent				" Turn on automatic indenting
 set autoread				" Automatically read files if they've changed
@@ -17,6 +18,7 @@ set laststatus=2			" Always show the status line.
 set modelines=10			" Search the first 10 lines for modes
 set mouse=a					" Make the mouse work in all modes
 set noexpandtab
+set nofoldenable			" Disable folding.
 set nowrap					" Turn off wrapping
 set ruler					" Show the cursor position all the time
 set smartcase				" Case insensitive when all lower case.
@@ -51,6 +53,15 @@ let g:Powerline_symbols = 'fancy'
 call Pl#Theme#RemoveSegment('fileformat')
 call Pl#Theme#RemoveSegment('fileencoding')
 call Pl#Theme#RemoveSegment('filetype')
+
+" Snipmate snippets
+let g:snippets_dir = '~/.vim/snippets'
+
+" Supertab
+let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+
+" Syntastic tweaks
+let g:syntastic_phpcs_disable = 1
 
 " Turn on spell checking
 setlocal spell spelllang=en_gb
