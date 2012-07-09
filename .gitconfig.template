@@ -1,3 +1,4 @@
+# vim:ft=gitconfig
 [user]
 	name = Conor McDermottroe
 	email = ___EMAIL___
@@ -8,6 +9,7 @@
 [core]
 	quotepath = false
 	excludesfile = ~/.cvsignore
+	editor = vim
 [help]
 	autocorrect = 1
 [rerere]

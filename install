@@ -25,7 +25,9 @@ bash_completion() {
 # Print the command we're going to run and (if DRY_RUN is not set) run it.
 cmd() {
   echo $*
-  [ ${DRY_RUN:-unset} = "unset" ] && $*
+  if [ ${DRY_RUN:-unset} = "unset" ]; then
+    $*
+  fi
 }
 
 # Ensure a package is installed
@@ -143,6 +145,12 @@ symlink .vim
 symlink .vimrc
 
 # Extra bash completions
+bash_completion modules/completion-ruby/completion-bundle
+bash_completion modules/completion-ruby/completion-gem
+bash_completion modules/completion-ruby/completion-jruby
+bash_completion modules/completion-ruby/completion-rails
+bash_completion modules/completion-ruby/completion-rake
+bash_completion modules/completion-ruby/completion-ruby
 bash_completion modules/vagrant-bash-completion/vagrant
 
 # Sort out the bin directory

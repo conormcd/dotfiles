@@ -55,3 +55,6 @@
 [submodule ".vim/bundle/snipmate.vim"]
 	path = .vim/bundle/snipmate.vim
 	url = https://github.com/msanders/snipmate.vim
+[submodule "modules/completion-ruby"]
+	path = modules/completion-ruby
+	url = git://github.com/mernen/completion-ruby.git
