@@ -65,7 +65,8 @@ let g:syntastic_phpcs_disable = 1
 
 " Turn on spell checking
 setlocal spell spelllang=en_gb
-	
+autocmd FileType gitconfig setlocal nospell
+
 " Highlight trailing whitespace
 highlight TrailingWhitespace ctermbg=red guibg=red
 match TrailingWhitespace /\s\+$/
@@ -76,4 +77,11 @@ autocmd FileType python call PythonRules()
 function! PythonRules()
 	highlight TrailingSemiColon ctermbg=red guibg=red
 	match TrailingSemiColon /\;$/
+endfunction
+
+" Text file specific rules
+autocmd BufNewFile,BufRead *.txt call PlaintextRules()
+autocmd FileType text call PlaintextRules()
+function! PlaintextRules()
+	setlocal textwidth=78
 endfunction
