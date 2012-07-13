@@ -10,6 +10,7 @@
 	quotepath = false
 	excludesfile = ~/.cvsignore
 	editor = vim
+	pager = less -x4
 [help]
 	autocorrect = 1
 [rerere]
