@@ -1,4 +1,6 @@
+AWS
 DocBook
+MCollective
 McDermottroe
 MySQL
 PostgreSQL
@@ -14,6 +16,7 @@ carpaccio
 checklist
 cheekpiece
 config
+configs
 conor
 docbook
 dtd
@@ -30,6 +33,7 @@ github
 google
 handstop
 hmac
+hostname
 java
 json
 leatherman
@@ -37,6 +41,7 @@ mcdermottroe
 mysql
 oauth
 oauth2
+openssl
 parmesan
 peli
 perl
