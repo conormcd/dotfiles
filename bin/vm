@@ -1,0 +1,112 @@
+#!/bin/sh
+
+set -o nounset
+
+# Run a VBoxManage command.
+cmd() {
+    if ! which VBoxManage > /dev/null 2>&1; then
+        echo "To use this tool you must have VBoxManage in your path."
+        exit 1
+    fi
+    VBoxManage $*
+}
+
+# Output the help message
+cmd_help() {
+    if [ $# -gt 0 ]; then
+        case $1 in
+            (kill)
+                echo "Usage: vm kill <uuid_or_name>"
+                ;;
+            (killall)
+                echo "Usage: vm killall"
+                ;;
+            (list)
+                cat - <<HELP
+Usage: vm list [--all] [--verbose]
+
+Optional arguments:
+
+    --all, -a      Show all VMs, not just the running ones.
+    --verbose, -v  Be more verbose.
+HELP
+                ;;
+            (*)
+                echo "There's no help for $1"
+                echo ""
+                cmd_help
+                exit 1
+        esac
+    else
+        cat - <<HELP
+Usage: vm <command> [args]
+
+Commands:
+    help [command]            Show this help or help for a specific command.
+    kill uuid [uuid...]       Kill one or more VMs.
+    killall                   Kill all running VMs.
+    list [--all] [--verbose]  List VMs.
+HELP
+    fi
+}
+
+# Kill/shut down a VM by name or UUID.
+cmd_kill() {
+    for uuid_or_name in $*; do
+        cmd controlvm ${uuid_or_name} poweroff
+    done
+}
+
+# Kill all running virtual machines.
+cmd_killall() {
+    cmd_kill $(cmd_list)
+}
+
+# List the VMs
+cmd_list() {
+    local all=0
+    local verbose=0
+    for opt in $*; do
+        case ${opt} in
+            (-a|--all)
+                all=1
+                ;;
+            (-v|--verbose)
+                verbose=1
+                ;;
+            (*)
+                echo "Invalid option: ${opt}"
+                exit 1
+                ;;
+        esac
+    done
+
+    vmtype=runningvms
+    if [ ${all} -gt 0 ]; then
+        vmtype=vms
+    fi
+    if [ ${verbose} -gt 0 ]; then
+        cmd list ${vmtype} | sed -e 's/"\(.*\)" {\(.*\)}/\2 "\1"/'
+    else
+        cmd list ${vmtype} | sed -e 's/^.*{//' -e 's/}.*//'
+    fi
+}
+
+# Dispatch the commands
+if [ $# -gt 0 ]; then
+    command=$1
+else
+    command=help
+fi
+case ${command} in
+    (help|kill|killall|list)
+        shift
+        cmd_${command} $*
+        ;;
+    (*)
+        echo "Invalid command: ${command}"
+        echo ""
+        cmd_help
+        exit 1
+        ;;
+esac

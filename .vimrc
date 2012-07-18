@@ -65,11 +65,15 @@ let g:syntastic_phpcs_disable = 1
 
 " Turn on spell checking
 setlocal spell spelllang=en_gb
-autocmd FileType gitconfig setlocal nospell
+autocmd FileType gitconfig,gitrebase setlocal nospell
 
 " Highlight trailing whitespace
 highlight TrailingWhitespace ctermbg=red guibg=red
 match TrailingWhitespace /\s\+$/
+
+" I want text wrapping for some file types
+autocmd BufNewFile,BufRead *.md,*.tex,*.txt setlocal textwidth=78
+autocmd FileType markdown,plaintex,tex,text setlocal textwidth=78
 
 " Python-specific rules
 autocmd BufNewFile,BufRead *.py call PythonRules()
@@ -77,11 +81,4 @@ autocmd FileType python call PythonRules()
 function! PythonRules()
 	highlight TrailingSemiColon ctermbg=red guibg=red
 	match TrailingSemiColon /\;$/
-endfunction
-
-" Text file specific rules
-autocmd BufNewFile,BufRead *.txt call PlaintextRules()
-autocmd FileType text call PlaintextRules()
-function! PlaintextRules()
-	setlocal textwidth=78
 endfunction

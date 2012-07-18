@@ -49,6 +49,9 @@ pkg() {
         installer="brew"
         flags=""
         case ${package_name} in
+          (boto|httpie|paramiko|tornado)
+            installer="pip"
+            ;;
           (php)
             package_name=php54
             flags="--with-mysql --with-pgsql --with-fpm --with-intl"
@@ -74,6 +77,19 @@ pkg() {
             # Now install the gem if necessary
             if [ "$(gem list ${package_name} | grep ${package_name})" = "" ]; then
               cmd gem install ${package_name}
+            fi
+            ;;
+          (pip)
+            if ! which pip > /dev/null 2>&1; then
+              if [ ${DRY_RUN:-set} != "set" ]; then
+                curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
+              else
+                echo "[Install pip]"
+              fi
+            fi
+
+            if [ ! -d /Library/Python/2.7/site-packages/${package_name} ]; then
+              cmd sudo pip install ${package_name}
             fi
             ;;
           (*)
@@ -127,7 +143,7 @@ symlink() {
 
 # Install the packages we need
 pkg bash bash-completion ctags git nmap vim wget
-[ ${OS} = "Darwin" ] && pkg fontforge go hub nginx php ruby vagrant
+[ ${OS} = "Darwin" ] && pkg boto fontforge go hub httpie mercurial nginx paramiko php ruby tornado vagrant
 [ ${OS} != "Darwin" ] && pkg mutt
 
 # Generate .gitconfig
@@ -157,4 +173,7 @@ bash_completion modules/vagrant-bash-completion/vagrant
 
 # Sort out the bin directory
 [ -d ${HOME}/bin ] || cmd mkdir ${HOME}/bin
+for file in $(find ${root}/bin -type f); do
+  symlink ${file} bin/$(basename ${file})
+done
 symlink modules/git-wip/git-wip bin/git-wip
