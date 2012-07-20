@@ -58,3 +58,6 @@
 [submodule "modules/completion-ruby"]
 	path = modules/completion-ruby
 	url = git://github.com/mernen/completion-ruby.git
+[submodule ".vim/bundle/rubycomplete.vim"]
+	path = .vim/bundle/rubycomplete.vim
+	url = git://github.com/vim-scripts/rubycomplete.vim.git

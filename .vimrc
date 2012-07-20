@@ -48,6 +48,9 @@ let php_htmlInStrings = 1
 let python_highlight_all = 1
 let is_posix = 1
 
+" Omnifunc tweaks
+autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
+
 " Powerline customization
 let g:Powerline_symbols = 'fancy'
 call Pl#Theme#RemoveSegment('fileformat')
@@ -58,7 +61,7 @@ call Pl#Theme#RemoveSegment('filetype')
 let g:snippets_dir = '~/.vim/snippets'
 
 " Supertab
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
+autocmd FileType c,html,javascript,php,python,ruby,sql,xml let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 
 " Syntastic tweaks
 let g:syntastic_phpcs_disable = 1
@@ -72,11 +75,9 @@ highlight TrailingWhitespace ctermbg=red guibg=red
 match TrailingWhitespace /\s\+$/
 
 " I want text wrapping for some file types
-autocmd BufNewFile,BufRead *.md,*.tex,*.txt setlocal textwidth=78
 autocmd FileType markdown,plaintex,tex,text setlocal textwidth=78
 
 " Python-specific rules
-autocmd BufNewFile,BufRead *.py call PythonRules()
 autocmd FileType python call PythonRules()
 function! PythonRules()
 	highlight TrailingSemiColon ctermbg=red guibg=red
