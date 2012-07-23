@@ -22,11 +22,11 @@ for _dir in ${potential_extra_dirs[@]}; do
 done
 
 # Environment variables go here
-BLOCKSIZE=K
-EDITOR=vim
+export BLOCKSIZE=K
+export EDITOR=vim
 HISTFILE="${HOME}/.history"
-LANG=en_IE.UTF-8
-LC_COLLATE=C
+export LANG=en_IE.UTF-8
+export LC_COLLATE=C
 
 # Include completion files
 if [[ -f /etc/bash_completion ]]; then
