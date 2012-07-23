@@ -170,6 +170,7 @@ bash_completion modules/completion-ruby/completion-rails
 bash_completion modules/completion-ruby/completion-rake
 bash_completion modules/completion-ruby/completion-ruby
 bash_completion modules/vagrant-bash-completion/vagrant
+bash_completion $(brew --prefix)/Library/Contributions/brew_bash_completion.sh
 
 # Sort out the bin directory
 [ -d ${HOME}/bin ] || cmd mkdir ${HOME}/bin
