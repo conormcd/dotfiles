@@ -31,12 +31,9 @@ export LC_COLLATE=C
 # Include completion files
 if [[ -f /etc/bash_completion ]]; then
     . /etc/bash_completion
-elif [[ -f /usr/local/etc/bash_completion ]]; then
+fi
+if [[ -f /usr/local/etc/bash_completion ]]; then
     . /usr/local/etc/bash_completion
-elif which brew > /dev/null 2>&1; then
-    if [[ -f $(brew --prefix)/etc/bash_completion ]]; then
-        . $(brew --prefix)/etc/bash_completion
-    fi
 fi
 
 # Make a large history and share it between all sessions *and* with tcsh
