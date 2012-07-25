@@ -34,6 +34,7 @@ set viminfo='20,\"50		" Use a viminfo file (remember 20 files, 50 lines)
 inoremap # X#
 
 " F keys
+nmap <F7> :call ToggleSpelling()<CR>
 nmap <F8> :TagbarToggle<CR>
 
 " Set some syntax highlighting options.
@@ -69,6 +70,13 @@ let g:syntastic_phpcs_disable = 1
 " Turn on spell checking
 setlocal spell spelllang=en_gb
 autocmd FileType gitconfig,gitrebase setlocal nospell
+function! ToggleSpelling()
+	if &spell
+		set nospell
+	else
+		set spell
+	endif
+endfunction
 
 " Highlight trailing whitespace
 highlight TrailingWhitespace ctermbg=red guibg=red
