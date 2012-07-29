@@ -69,7 +69,7 @@ let g:syntastic_phpcs_disable = 1
 
 " Turn on spell checking
 setlocal spell spelllang=en_gb
-autocmd FileType gitconfig,gitrebase setlocal nospell
+autocmd FileType diff,gitconfig,gitrebase setlocal nospell
 function! ToggleSpelling()
 	if &spell
 		set nospell
