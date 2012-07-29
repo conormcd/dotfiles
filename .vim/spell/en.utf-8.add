@@ -1,5 +1,6 @@
 DocBook
 GWoo
+GitHub
 Josh
 MCollective
 McDermottroe
@@ -10,6 +11,7 @@ SQLite
 api
 app
 apps
+awk
 aws
 bipod
 buttplate
@@ -25,6 +27,7 @@ ec2
 eley
 engineyard
 eyapi
+fallback
 filesystem
 foo
 foresight
@@ -53,6 +56,7 @@ php
 pid
 png
 posix
+prepend
 rakefile
 rearsight
 redis
@@ -61,6 +65,7 @@ rubinius
 rvm
 s3
 scatt
+sed
 sha
 sha1
 stderr
