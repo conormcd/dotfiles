@@ -143,8 +143,11 @@ symlink() {
 
 # Install the packages we need
 pkg bash bash-completion ctags git nmap vim wget
-[ ${OS} = "Darwin" ] && pkg boto fontforge go hub httpie mercurial nginx paramiko php ruby tornado vagrant
+[ ${OS} = "Darwin" ] && pkg boto fontforge go hub httpie mercurial nginx paramiko php pstree ruby tornado vagrant
 [ ${OS} != "Darwin" ] && pkg mutt
+if ! which make > /dev/null 2>&1; then
+  pkg make
+fi
 
 # Generate .gitconfig
 if [ ${DRY_RUN:-set} != "set" ]; then
