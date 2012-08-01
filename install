@@ -59,6 +59,9 @@ pkg() {
           (vagrant)
             installer="gem"
             ;;
+          (xdebug)
+            package_name="php54-xdebug"
+            ;;
         esac
 
         # Trigger the install
@@ -118,6 +121,32 @@ pkg() {
   done
 }
 
+# Add a PEAR channel
+pear_channel() {
+  for channel in $*; do
+    if ! pear channel-info ${channel} > /dev/null 2>&1; then
+      cmd sudo pear channel-discover ${channel}
+    fi
+  done
+}
+
+# Install a PEAR package
+pear_install() {
+  package_name=$1
+  if [ $# -gt 1 ]; then
+    package_source=$2
+  else
+    package_source=$1
+  fi
+  if which pear > /dev/null 2>&1; then
+    if [ "X$(pear list -a | grep ^${package_name}\ )X" = "XX" ]; then
+      cmd sudo pear install --alldeps ${package_source}
+    fi
+  else
+    pkg php
+  fi
+}
+
 # Symlink a file from this repo.
 symlink() {
   file=$1
@@ -141,10 +170,21 @@ symlink() {
 # Now work through all the things we need.
 #
 
+# If X11 isn't installed, we need to prompt for XQuartz before going further.
+if [ ! -d /opt/X11 ]; then
+  echo "Install XQuartz before going any further."
+  echo "http://xquartz.macosforge.org/"
+  exit 1
+fi
+
 # Install the packages we need
-pkg bash bash-completion ctags git nmap vim wget
-[ ${OS} = "Darwin" ] && pkg boto fontforge go hub httpie mercurial nginx paramiko php pstree ruby tornado vagrant
-[ ${OS} != "Darwin" ] && pkg mutt
+pkg bash bash-completion ctags gnupg git nmap vim wget
+if [ ${OS} = "Darwin" ]; then
+  pkg boto fontforge go hub httpie imagemagick mercurial nginx paramiko php \
+    pstree ruby tornado vagrant xdebug
+else
+  pkg mutt
+fi
 if ! which make > /dev/null 2>&1; then
   pkg make
 fi
@@ -174,6 +214,19 @@ bash_completion modules/completion-ruby/completion-rake
 bash_completion modules/completion-ruby/completion-ruby
 bash_completion modules/vagrant-bash-completion/vagrant
 bash_completion $(brew --prefix)/Library/Contributions/brew_bash_completion.sh
+
+# PHP extras
+if [ ${OS} = "Darwin" ]; then
+  pear_channel pear.pdepend.org pear.phpmd.org pear.phpunit.de \
+    components.ez.no pear.symfony-project.com pear.phpundercontrol.org
+  pear_install PHP_Depend pdepend/PHP_Depend-beta
+  pear_install PHP_PMD phpmd/PHP_PMD-alpha
+  pear_install phpcpd phpunit/phpcpd
+  pear_install PhpDocumentor PHPDocumentor
+  pear_install PHP_CodeSniffer
+  pear_install PHP_CodeBrowser phpunit/PHP_CodeBrowser-alpha
+  pear_install PHPUnit phpunit/PHPUnit
+fi
 
 # Sort out the bin directory
 [ -d ${HOME}/bin ] || cmd mkdir ${HOME}/bin
