@@ -180,8 +180,8 @@ fi
 # Install the packages we need
 pkg bash bash-completion ctags gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
-  pkg boto fontforge go hub httpie imagemagick mercurial nginx paramiko php \
-    pstree ruby tornado vagrant xdebug
+  pkg boto go hub httpie imagemagick mercurial nginx paramiko php pstree ruby \
+    tornado vagrant xdebug
 else
   pkg mutt
 fi
