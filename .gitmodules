@@ -49,12 +49,6 @@
 [submodule ".vim/bundle/supertab"]
 	path = .vim/bundle/supertab
 	url = git://github.com/ervandew/supertab.git
-[submodule ".vim/snippets"]
-	path = .vim/snippets
-	url = git://github.com/scrooloose/snipmate-snippets.git
-[submodule ".vim/bundle/snipmate.vim"]
-	path = .vim/bundle/snipmate.vim
-	url = https://github.com/msanders/snipmate.vim
 [submodule "modules/completion-ruby"]
 	path = modules/completion-ruby
 	url = git://github.com/mernen/completion-ruby.git
