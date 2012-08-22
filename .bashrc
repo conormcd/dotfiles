@@ -39,8 +39,8 @@ fi
 # Make a large history and share it between all sessions *and* with tcsh
 shopt -s histappend
 HISTFILE="${HOME}/.history"
-HISTFILESIZE=10000
-HISTSIZE=10000
+HISTFILESIZE=1000
+HISTSIZE=1000
 PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 # Set the prompt
@@ -48,6 +48,7 @@ GIT_PS1_SHOWDIRTYSTATE="true"
 GIT_PS1_SHOWSTASHSTATE="true"
 GIT_PS1_SHOWUNTRACKEDFILES="true"
 GIT_PS1_SHOWUPSTREAM="auto"
+. /usr/local/share/git-core/contrib/completion/git-prompt.sh
 PROMPT_COMMAND="rebuild_prompt; $PROMPT_COMMAND"
 rebuild_prompt() {
     # Color setup
