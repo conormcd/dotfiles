@@ -49,7 +49,7 @@ pkg() {
         installer="brew"
         flags=""
         case ${package_name} in
-          (boto|httpie|paramiko|tornado)
+          (boto|httpie|paramiko|pyflakes|tornado)
             installer="pip"
             ;;
           (php)
@@ -183,7 +183,7 @@ fi
 pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
   pkg boto go hub httpie imagemagick mercurial mysql nginx paramiko php \
-    postgresql pstree redis ruby tornado vagrant xdebug
+    postgresql pstree pyflakes redis ruby tornado vagrant xdebug
 else
   pkg mutt
 fi
