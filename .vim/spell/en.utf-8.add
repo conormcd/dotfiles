@@ -31,6 +31,7 @@ durc
 ec2
 eley
 engineyard
+etc
 eyapi
 facebook
 fallback
@@ -46,6 +47,7 @@ google
 handstop
 hmac
 hostname
+https
 issf
 java
 javascript
@@ -75,7 +77,6 @@ postgres
 prepend
 procmail
 qa
-procmail
 rakefile
 rearsight
 redis
@@ -86,6 +87,7 @@ rvm
 s3
 scatt
 sed
+setup
 sha
 sha1
 sighters
@@ -94,9 +96,11 @@ stderr
 stdin
 stdout
 symlink
+symlinks
 tarball
 tcd
 ubuntu
+ui
 uk
 undershirt
 uri
