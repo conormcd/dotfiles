@@ -178,10 +178,10 @@ if [ ! -d /opt/X11 ]; then
 fi
 
 # Install the packages we need
-pkg bash bash-completion ctags gnupg git nmap vim wget
+pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
-  pkg boto go hub httpie imagemagick mercurial nginx paramiko php pstree ruby \
-    tornado vagrant xdebug
+  pkg boto go hub httpie imagemagick mercurial mysql nginx paramiko php \
+    postgresql pstree redis ruby tornado vagrant xdebug
 else
   pkg mutt
 fi
