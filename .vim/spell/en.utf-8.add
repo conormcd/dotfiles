@@ -27,10 +27,12 @@ conor
 dll
 docbook
 dtd
+durc
 ec2
 eley
 engineyard
 eyapi
+facebook
 fallback
 filesystem
 foo
@@ -39,6 +41,7 @@ gcc
 gemfile
 gentoo
 github
+gmail
 google
 handstop
 hmac
@@ -52,8 +55,10 @@ leatherman
 mcdermottroe
 megalink
 mysql
+nasrpc
 nextgen
 nginx
+nsra
 oauth
 oauth2
 openssl
@@ -68,11 +73,14 @@ png
 posix
 postgres
 prepend
+procmail
 qa
+procmail
 rakefile
 rearsight
 redis
 repo
+ro
 rubinius
 rvm
 s3
@@ -87,7 +95,9 @@ stdin
 stdout
 symlink
 tarball
+tcd
 ubuntu
+uk
 undershirt
 uri
 uuid
