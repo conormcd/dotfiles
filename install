@@ -171,10 +171,12 @@ symlink() {
 #
 
 # If X11 isn't installed, we need to prompt for XQuartz before going further.
-if [ ! -d /opt/X11 ]; then
-  echo "Install XQuartz before going any further."
-  echo "http://xquartz.macosforge.org/"
-  exit 1
+if [ ${OS} = "Darwin" ]; then
+  if [ ! -d /opt/X11 ]; then
+    echo "Install XQuartz before going any further."
+    echo "http://xquartz.macosforge.org/"
+    exit 1
+  fi
 fi
 
 # Install the packages we need
@@ -213,7 +215,9 @@ bash_completion modules/completion-ruby/completion-rails
 bash_completion modules/completion-ruby/completion-rake
 bash_completion modules/completion-ruby/completion-ruby
 bash_completion modules/vagrant-bash-completion/vagrant
-bash_completion $(brew --prefix)/Library/Contributions/brew_bash_completion.sh
+if [ ${OS} = "Darwin" ]; then
+  bash_completion $(brew --prefix)/Library/Contributions/brew_bash_completion.sh
+fi
 
 # Prune the bash completions to the things we have
 completion_dir=/etc/bash_completion.d
