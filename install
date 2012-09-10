@@ -224,7 +224,7 @@ completion_dir=/etc/bash_completion.d
 if which brew > /dev/null 2>&1; then
   completion_dir="$(brew --prefix)${completion_dir}"
 fi
-for _completion_file in $(find ${completion_dir} -type l); do
+for _completion_file in $(find ${completion_dir} -type l -o -type f); do
   _have=$(awk '/^have / { print $2; exit}' ${_completion_file})
   if [ -n "${_have}" ]; then
     if ! type ${_have} > /dev/null 2>&1; then
