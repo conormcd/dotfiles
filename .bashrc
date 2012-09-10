@@ -48,7 +48,6 @@ GIT_PS1_SHOWDIRTYSTATE="true"
 GIT_PS1_SHOWSTASHSTATE="true"
 GIT_PS1_SHOWUNTRACKEDFILES="true"
 GIT_PS1_SHOWUPSTREAM="auto"
-. /usr/local/share/git-core/contrib/completion/git-prompt.sh
 PROMPT_COMMAND="rebuild_prompt; $PROMPT_COMMAND"
 rebuild_prompt() {
     # Color setup
