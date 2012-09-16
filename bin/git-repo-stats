@@ -1,0 +1,107 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $MODE = 'name';
+my $SORT_BY = 'log';
+
+my %overall;
+foreach my $file (&files) {
+    my %blame = &blame($file);
+    my %log = &log($file);
+
+    foreach (keys %{$blame{$MODE}}) {
+        if ($MODE eq 'name' && /^(.*) & (.*)$/o) {
+            $overall{'blame'}{$1} += $blame{$MODE}{$_} / 2;
+            $overall{'blame'}{$2} += $blame{$MODE}{$_} / 2;
+        } else {
+            $overall{'blame'}{$_} += $blame{$MODE}{$_};
+        }
+        $overall{'blame'}{'TOTAL'} += $blame{$MODE}{$_};
+    }
+    foreach (keys %{$log{$MODE}}) {
+        if ($MODE eq 'name' && /^(.*) & (.*)$/o) {
+            $overall{'log'}{$1} += $log{$MODE}{$_} / 2;
+            $overall{'log'}{$2} += $log{$MODE}{$_} / 2;
+        } else {
+            $overall{'log'}{$_} += $log{$MODE}{$_};
+        }
+        $overall{'log'}{'TOTAL'} += $log{$MODE}{$_};
+    }
+}
+
+my %combined;
+foreach my $source (keys %overall) {
+    foreach my $author (keys %{$overall{$source}}) {
+        if ($author ne 'TOTAL') {
+            $combined{$source}{$author} = {
+                'raw' => $overall{$source}{$author},
+                'pct' => ($overall{$source}{$author} / $overall{$source}{'TOTAL'}) * 100,
+            };
+        }
+    }
+}
+
+foreach (sort { $combined{$SORT_BY}{$b}{'pct'} <=> $combined{$SORT_BY}{$a}{'pct'} } keys %{$combined{$SORT_BY}}) {
+    printf("%s %0.3f%%\n", $_, $combined{$SORT_BY}{$_}{'pct'});
+}
+
+sub files {
+    my @files;
+    if (open(LS, "git ls-files|")) {
+        while (<LS>) {
+            chomp;
+            if (-f $_) {
+                push @files, $_;
+            }
+        }
+    }
+    return @files;
+}
+
+sub blame {
+    my $file = shift;
+
+    my %stats;
+    my $author;
+    my $author_email;
+    if (open(BLAME, "git blame --line-porcelain $file|")) {
+        while (<BLAME>) {
+            chomp;
+            if (/^author (.*)$/o) {
+                $author = $1;
+            } elsif (/^author-mail <(.*)>$/o) {
+                $author_email = $1;
+            } elsif (/^committer /o) {
+                $stats{'name'}{$author}++;
+                $stats{'email'}{$author_email}++;
+            }
+        }
+    }
+    return %stats;
+}
+
+sub log {
+    my $file = shift;
+
+    my %stats;
+    my $author;
+    my $author_email;
+    if (open(LOG, "git log --stat --format='format:author %an%nauthor-mail %ae' $file|")) {
+        while (<LOG>) {
+            chomp;
+            if (/^author (.*)$/o) {
+                $author = $1;
+            } elsif (/^author-mail (.*)$/o) {
+                $author_email = $1;
+            } elsif (/^ 1 file changed(?:, (\d+) insertions?...)?(?:, (\d+) deletions?...)?/o) {
+                my $inserts = $1 || 0;
+                my $deletes = $2 || 0;
+                $stats{'name'}{$author} += ($inserts + $deletes);
+                $stats{'email'}{$author_email} += ($inserts + $deletes);
+            }
+        }
+    }
+    return %stats;
+}
