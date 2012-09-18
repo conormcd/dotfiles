@@ -1,0 +1,23 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $file = shift;
+
+# Find the folder that the mail is in.
+(my $folder = $file) =~ s,/(?:new|cur)/.*,,o;
+
+# Find the basename of the mail, minus any flags that might be added
+(my $filebase = $file) =~ s/^.*\/(.*?)(?::2,(.*))?$/$1/o;
+
+# Unpack the flags, and set the Seen flag.
+my %flags;
+map { $flags{$_} = 1 } split //, $2 if $2;
+$flags{'S'} = 1;
+
+# Move the file
+rename(
+    glob("$folder/{cur,new}/$filebase*"),
+    "$folder/cur/$filebase:2," . join('', sort keys %flags)
+)
