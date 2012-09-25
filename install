@@ -49,7 +49,7 @@ pkg() {
         installer="brew"
         flags=""
         case ${package_name} in
-          (boto|httpie|paramiko|pyflakes|tornado)
+          (boto|httpie|paramiko|pyflakes|requests|requests-oauth|tornado)
             installer="pip"
             ;;
           (php)
@@ -91,7 +91,11 @@ pkg() {
               fi
             fi
 
-            if [ ! -d /Library/Python/2.7/site-packages/${package_name} ]; then
+            package_dir=/Library/Python/2.7/site-packages/${package_name}
+            if [ ${package_name} = "requests-oauth" ]; then
+              package_dir=/Library/Python/2.7/site-packages/oauth_hook
+            fi
+            if [ ! -d ${package_dir} ]; then
               cmd sudo pip install ${package_name}
             fi
             ;;
@@ -183,7 +187,8 @@ fi
 pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
   pkg boto go hub httpie imagemagick mercurial mysql nginx paramiko php \
-    postgresql pstree pyflakes redis ruby tornado vagrant xdebug
+    postgresql pstree pyflakes redis requests requests-oauth ruby tornado \
+    vagrant xdebug
 else
   pkg mutt
 fi
@@ -236,7 +241,8 @@ done
 # PHP extras
 if [ ${OS} = "Darwin" ]; then
   pear_channel pear.pdepend.org pear.phpmd.org pear.phpunit.de \
-    components.ez.no pear.symfony-project.com pear.phpundercontrol.org
+    components.ez.no pear.symfony-project.com pear.phpundercontrol.org \
+    pear.symfony.com
   pear_install PHP_Depend pdepend/PHP_Depend-beta
   pear_install PHP_PMD phpmd/PHP_PMD-alpha
   pear_install phpcpd phpunit/phpcpd
