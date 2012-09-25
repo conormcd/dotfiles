@@ -66,6 +66,7 @@ autocmd FileType c,html,javascript,php,python,ruby,sql,xml let g:SuperTabDefault
 
 " Syntastic tweaks
 let g:syntastic_phpcs_disable = 1
+let g:syntastic_c_compiler_options = ' -std=c99'
 
 " Turn on spell checking
 setlocal spell spelllang=en_gb
