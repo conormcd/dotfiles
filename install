@@ -23,6 +23,10 @@ bash_completion() {
   symlink ${completion_file} ${completion_dir}/$(basename ${completion_file})
 }
 
+bytemark_box() {
+  [ ${HOSTNAME} = "mcdermottr.vm.bytemark.co.uk" ]
+}
+
 # Print the command we're going to run and (if DRY_RUN is not set) run it.
 cmd() {
   echo $*
@@ -190,7 +194,8 @@ if [ ${OS} = "Darwin" ]; then
   pkg boto go hub httpie imagemagick mercurial mysql nginx paramiko php \
     postgresql pstree pyflakes redis requests requests-oauth ruby tornado \
     vagrant xdebug
-else
+fi
+if bytemark_box; then
   pkg mutt
 fi
 if ! which make > /dev/null 2>&1; then
@@ -207,7 +212,7 @@ symlink .bash_login
 symlink .bashrc
 symlink .cvsignore
 symlink .inputrc
-[ ${OS} != "Darwin" ] && symlink .muttrc
+if bytemark_box; then symlink .muttrc; fi
 symlink .tcsh
 symlink .tcshrc
 symlink .vim
@@ -259,7 +264,7 @@ for file in $(find ${root}/bin -type f); do
   filename=$(basename ${file})
   case ${filename} in
     (mailtail|mark_as_read)
-      if [ ${HOSTNAME} = "mcdermottr.vm.bytemark.co.uk" ]; then
+      if bytemark_box; then
         symlink ${file} bin/$(basename ${file})
       fi
       ;;
