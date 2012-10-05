@@ -11,79 +11,8 @@ mailboxes `find ~/Maildir -type d -name cur -prune | sort | perl -pe 'chomp; s/\
 #
 # Header ignoring
 #
-unignore *
-ignore Content-Disposition
-ignore Content-Transfer-Encoding
-ignore Content-Type
-ignore DKIM-Signature
-ignore Delivered-To
-ignore Delivery-date
-ignore DomainKey-Signature
-ignore Envelope-to
-ignore Errors-To
-ignore In-Reply-To
-ignore List-Archive
-ignore List-Help
-ignore List-Id
-ignore List-Post
-ignore List-Subscribe
-ignore List-Unsubscribe
-ignore Mailing-List
-ignore Message-Id
-ignore Mime-Version
-ignore Precedence
-ignore Received
-ignore References
-ignore Return-path
-ignore Sender
-ignore Thread-Index
-ignore X-Accept-Language
-ignore X-AntiVirus-Status
-ignore X-Authentication-Warning
-ignore X-BeenThere
-ignore X-CTASD-IP
-ignore X-CTASD-RefID
-ignore X-CTASD-Sender
-ignore X-Cron-Env
-ignore X-Exim-DNSBL-Count
-ignore X-Exim-GeoIP
-ignore X-Exim-Valid-Helo
-ignore X-Exim-Whitelist
-ignore X-HELO
-ignore X-Habeas-Swe-1
-ignore X-Habeas-Swe-2
-ignore X-Habeas-Swe-3
-ignore X-Habeas-Swe-4
-ignore X-Habeas-Swe-5
-ignore X-Habeas-Swe-6
-ignore X-Habeas-Swe-7
-ignore X-Habeas-Swe-8
-ignore X-Habeas-Swe-9
-ignore X-Length
-ignore X-Loop
-ignore X-MIMEDefang-Filter
-ignore X-MSMail-Priority
+ignore User-Agent
 ignore X-Mailer
-ignore X-Mailing-List
-ignore X-Mailman-Version
-ignore X-MimeOLE
-ignore X-Original-To
-ignore X-OriginalArrivalTime
-ignore X-Originating-IP
-ignore X-OriginatingIP
-ignore X-Priority
-ignore X-Scan-Signature
-ignore X-Scanned-By
-ignore X-Spam-Checker-Version
-ignore X-Spam-Level
-ignore X-Spam-Report
-ignore X-Spam-Status
-ignore X-UID
-ignore X-UIDL
-ignore X-URL
-ignore x-ctasd
-ignore x-ctasd-station
-ignore x-ctasd-vod
 
 #
 # Config variables
@@ -91,18 +20,24 @@ ignore x-ctasd-vod
 
 set beep_new = yes
 set crypt_verify_sig = yes
+set delete = yes
 set edit_headers = yes
 set envelope_from = yes
 set folder = '~/Maildir/'
 set folder_format = '%N %f'
 set from = conor@mcdermottroe.com
+set header_cache = '~/.mutt/header_cache/'
 set hostname = 'mcdermottroe.com'
 set include = yes
+set index_format = "%S  %{%d %b}  %-18.18F  %s"
 set mark_old = no
 set mask = '^(\.INBOX.*|)$'
 set mbox = '~/Maildir'
 set mbox_type = 'maildir'
+set message_cachedir = '~/.mutt/message_cache/'
 set move = no
+set pager_index_lines = 10
+set pager_context = 3
 set pgp_clearsign_command = 'gpg --no-verbose --batch --output - --passphrase-fd 0 --armor --textmode --clearsign %?a?-u %a? %f'
 set pgp_decode_command = 'gpg %?p?--passphrase-fd 0? --no-verbose --batch --output - %f'
 set pgp_decrypt_command = 'gpg --passphrase-fd 0 --no-verbose --batch --output - %f'
@@ -123,5 +58,9 @@ set pgp_verify_key_command = 'gpg --no-verbose --batch --fingerprint --check-sig
 set realname = 'Conor McDermottroe'
 set record = '~/Maildir/.Sent/'
 set reverse_name = yes
+set reverse_alias = yes
 set sort = 'threads'
 set spoolfile = '~/Maildir/'
+set status_chars  = " *%A"
+set status_format = "───[ Folder: %f ]───[%r%m messages%?n? (%n new)?%?d? (%d to delete)?%?t? (%t tagged)? ]───%>─%?p?( %p postponed )?───"
+set timeout = 10
