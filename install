@@ -4,6 +4,7 @@ set -o errexit
 set -o nounset
 
 BREW_TAPS="adamv/alt homebrew/dupes homebrew/versions josegonzalez/php"
+HOSTNAME=$(hostname)
 OS=$(uname -s)
 
 # Get the full path to the current directory.
@@ -255,6 +256,16 @@ fi
 # Sort out the bin directory
 [ -d ${HOME}/bin ] || cmd mkdir ${HOME}/bin
 for file in $(find ${root}/bin -type f); do
-  symlink ${file} bin/$(basename ${file})
+  filename=$(basename ${file})
+  case ${filename} in
+    (mailtail|mark_as_read)
+      if [ ${HOSTNAME} = "mcdermottr.vm.bytemark.co.uk" ]; then
+        symlink ${file} bin/$(basename ${file})
+      fi
+      ;;
+    (*)
+      symlink ${file} bin/$(basename ${file})
+      ;;
+  esac
 done
 symlink modules/git-wip/git-wip bin/git-wip
