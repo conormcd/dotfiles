@@ -1,0 +1,43 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+use Net::IP;
+
+my $FIELD = -1;
+my $REVERSE = 0;
+GetOptions(
+	'f|field=i' => \$FIELD,
+	'r|reverse' => \$REVERSE,
+);
+
+# Slurp, sort and print
+my @data;
+while (<>) {
+	push @data, $_;
+}
+if ($REVERSE) {
+	@data = sort { &ip_as_int($b) <=> &ip_as_int($a) } @data;
+} else {
+	@data = sort { &ip_as_int($a) <=> &ip_as_int($b) } @data;
+}
+foreach (@data) {
+	print;
+}
+
+sub ip_as_int {
+	my $line = shift;
+
+	my $ip;
+	if ($FIELD >= 0) {
+		$ip = (split(/\s+/o, $line))[$FIELD - 1];
+	} elsif ($line =~ /(\d{1,3}(?:\.\d{1,3}){3}|[0-9A-Fa-f:]+)/o) {
+		$ip = $1;
+	}
+
+	$ip = new Net::IP($ip) if $ip;
+	return $ip->intip() if $ip;
+	return -1;
+}

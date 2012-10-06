@@ -263,7 +263,7 @@ fi
 for file in $(find ${root}/bin -type f); do
   filename=$(basename ${file})
   case ${filename} in
-    (mailtail|mark_as_read)
+    (ipsort|mailtail|mark_as_read)
       if bytemark_box; then
         symlink ${file} bin/$(basename ${file})
       fi

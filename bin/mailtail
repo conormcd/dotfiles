@@ -1,0 +1,83 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Net::DNS;
+use Socket;
+
+my $dns = new Net::DNS::Resolver;
+
+if (open(LOG, "tail -n 100 -F /var/log/exim4/mainlog |")) {
+	while (<LOG>) {
+		if	(
+				/no IP address found for host/o ||
+				/no host name found for IP address/o ||
+				/Warning: Sender (?:address|domain) in whitelist/o ||
+				/unexpected disconnection while reading SMTP command from/o ||
+				/SMTP protocol synchronization error/o ||
+				/SMTP command timeout on connection from/o ||
+				/SMTP data timeout \(message abandoned\) on connection from/o ||
+				/Warning: Sending server is not white\/blacklisted/o ||
+				/(?:Start|End) queue run/o
+			)
+		{
+			# Ignore
+		} elsif (/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) H=.*?\[(\d+\.\d+\.\d+\.\d+|[0-9a-f]+(?::+[0-9a-f]+)+)\] rejected connection in "connect" ACL/o) {
+			&print_summary($1, "BLACKLISTED IP", $2);
+		} elsif (/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) H=.*?\[(\d+\.\d+\.\d+\.\d+|[0-9a-f]+(?::+[0-9a-f]+)+)\] rejected MAIL <?(.*?)>?: Sorry, you are on too many DNSBLs/o) {
+			&print_summary($1, "DNSBL", $2, "From" => $3);
+		} elsif (/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d).*?H=.*?\[(\d+\.\d+\.\d+\.\d+|[0-9a-f]+(?::+[0-9a-f]+)+)\].*?F=<(.*?)> rejected after DATA: This message was classified as spam/o) {
+			&print_summary($1, "SPAMASSASSIN", $2, "From" => $3);
+		} elsif (/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d).*?H=.*?\[(\d+\.\d+\.\d+\.\d+|[0-9a-f]+(?::+[0-9a-f]+)+)\].*?rejected EHLO or HELO (\S+): \S+ is me not you/o) {
+			&print_summary($1, "BAD HELO", $2, "HELO" => $3);
+		} elsif (/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d).*?H=.*?\[(\d+\.\d+\.\d+\.\d+|[0-9a-f]+(?::+[0-9a-f]+)+)\].*?F=<(.*?)> rejected RCPT <(.*?)>/o) {
+			&print_summary($1, "BAD RCPT", $2, "From" => $3, "To" => $4);
+		} elsif (/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d) rejected (?:HELO|EHLO) from .*?\[(\d+\.\d+\.\d+\.\d+|[0-9a-f]+(?::+[0-9a-f]+)+)]\: syntactically invalid argument\(s\): (.*)$/) {
+			&print_summary($1, "BAD HELO", $2, "HELO" => $3);
+		} elsif (/^(\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d).*?\[(\d+\.\d+\.\d+\.\d+|[0-9a-f]+(?::+[0-9a-f]+)+)] rejected MAIL <(.*?)>: Sender domain in blacklist$/) {
+			&print_summary($1, "BLACKLISTED DOMAIN", $2, "From" => $3);
+		} else {
+			print;
+		}
+	}
+}
+
+sub print_summary {
+	my $timestamp = shift;
+	my $reason = shift;
+	my $ip = shift;
+	my %extra = @_;
+
+	my $hostname = &resolve($ip);
+	if ($hostname) {
+		$extra{"Hostname"} = $hostname;
+	}
+
+	my $extra = "";
+	foreach my $key (sort keys %extra) {
+		$extra .= " $key=$extra{$key}";
+	}
+
+	printf("%- 37s%- 19s% -15s%s\n", $timestamp, $reason, $ip, $extra);
+}
+
+sub resolve {
+	my $address = shift;
+	if ($address =~ /^0*([1-9][0-9]*)\.0*([1-9][0-9]*)\.0*([1-9][0-9]*)\.0*([1-9][0-9]*)$/o) {
+		$address = "$1.$2.$3.$4";
+		return gethostbyaddr(inet_aton($address), AF_INET);
+	} elsif ($address =~ /^[0-9a-f]+(?::+[0-9a-f]+)+$/o) {
+		my $query = $dns->search($address);
+		if ($query) {
+			foreach my $rr ($query->answer) {
+				if ($rr->type eq "PTR") {
+					return $rr->ptrdname;
+				}
+			}
+		}
+		return $address;
+	} else {
+		return $address;
+	}
+}
