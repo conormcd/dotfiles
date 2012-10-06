@@ -37,6 +37,9 @@ inoremap # X#
 nmap <F7> :call ToggleSpelling()<CR>
 nmap <F8> :TagbarToggle<CR>
 
+" Undo search highlighting on enter
+nnoremap <CR> :nohlsearch<CR>
+
 " Set some syntax highlighting options.
 let c_space_errors = 1
 let java_allow_cpp_keywords = 1
@@ -48,6 +51,12 @@ let php_sql_query = 1
 let php_htmlInStrings = 1
 let python_highlight_all = 1
 let is_posix = 1
+
+" Put the cursor back where it was the last time we edited the file.
+autocmd BufReadPost *
+  \ if line("'\"") > 0 && line("'\"") <= line("$") |
+  \   exe "normal g`\"" |
+  \ endif
 
 " Omnifunc tweaks
 autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
