@@ -4,12 +4,6 @@
 [submodule ".vim/bundle/mustache.vim"]
 	path = .vim/bundle/mustache.vim
 	url = git://github.com/juvenn/mustache.vim.git
-[submodule ".vim/bundle/vim-background-make"]
-	path = .vim/bundle/vim-background-make
-	url = git://github.com/gfxmonk/vim-background-make.git
-[submodule ".vim/bundle/vim-javascript"]
-	path = .vim/bundle/vim-javascript
-	url = git://github.com/pangloss/vim-javascript.git
 [submodule ".vim/bundle/vim-markdown"]
 	path = .vim/bundle/vim-markdown
 	url = git://github.com/tpope/vim-markdown.git
@@ -28,9 +22,6 @@
 [submodule ".vim/bundle/vim-commentary"]
 	path = .vim/bundle/vim-commentary
 	url = git://github.com/tpope/vim-commentary.git
-[submodule ".vim/bundle/html5.vim"]
-	path = .vim/bundle/html5.vim
-	url = git://github.com/othree/html5.vim.git
 [submodule ".vim/bundle/vim-powerline"]
 	path = .vim/bundle/vim-powerline
 	url = git://github.com/Lokaltog/vim-powerline.git
