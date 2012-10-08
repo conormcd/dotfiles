@@ -30,6 +30,9 @@ set title					" Put the name of the file in the terminal title
 set ttyfast					" Should be activated due to TERM, but anyway...
 set viminfo='20,\"50		" Use a viminfo file (remember 20 files, 50 lines)
 
+" Set a leader character for Command-T et al.
+let mapleader = ","
+
 " Make smartindent stop outdenting lines beginning with #
 inoremap # X#
 

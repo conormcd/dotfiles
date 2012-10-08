@@ -46,3 +46,6 @@
 [submodule ".vim/bundle/rubycomplete.vim"]
 	path = .vim/bundle/rubycomplete.vim
 	url = git://github.com/vim-scripts/rubycomplete.vim.git
+[submodule ".vim/bundle/Command-T"]
+	path = .vim/bundle/Command-T
+	url = git://github.com/wincent/Command-T.git
