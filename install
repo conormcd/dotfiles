@@ -64,8 +64,8 @@ pkg() {
           (vagrant)
             installer="gem"
             ;;
-          (xdebug)
-            package_name="php54-xdebug"
+          (xdebug|xhprof)
+            package_name="php54-${package_name}"
             ;;
         esac
 
@@ -193,7 +193,7 @@ pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
   pkg boto go hub httpie imagemagick mercurial mysql nginx paramiko php \
     postgresql pstree pyflakes redis requests requests-oauth ruby tornado \
-    vagrant xdebug
+    vagrant xdebug xhprof
 fi
 if bytemark_box; then
   pkg mutt
