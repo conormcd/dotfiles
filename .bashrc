@@ -88,9 +88,37 @@ rebuild_prompt() {
     PS1="${host_color}\A [${branch}\W]>${reset} "
 }
 
+# Git aliases
 alias gd="git diff"
-alias gl="git -c mailmap.file=${HOME}/.mailmap log --graph --pretty='tformat:%C(green)%ar{%C(reset)%C(bold blue)%aN%C(reset){%C(red)%d%C(reset) %s' | sed -e 's/ ago{/{/' | column -t -s '{' | less -FXSR"
+alias gl="pretty_git_log"
 alias gs="git status"
+pretty_git_log() {
+    local _time="%C(green)%ar{%C(reset)"
+    local _author="%C(bold blue)%aN%C(reset){"
+    local _ref="%C(red)%d%C(reset)"
+    local _message="%s"
+    local _repo_root=$(git rev-parse --show-toplevel)
+    local _mailmap=""
+
+    if [ -r ${_repo_root}/.mailmap ]; then
+        _mailmap=${_repo_root}/.mailmap
+    elif [ -r ${HOME}/.mailmap ]; then
+        _mailmap=${HOME}/.mailmap
+    fi
+    if [ -n "${_mailmap}" ]; then
+        _mailmap="-c mailmap.file=${_mailmap}"
+    fi
+
+    git \
+        ${_mailmap} \
+        log \
+        --graph \
+        --pretty="tformat:${_time}${_author}${_ref} ${_message}" \
+        $* \
+        | sed -e 's/ ago{/{/' \
+        | column -t -s '{' \
+        | less -FXSR
+}
 
 # Make sure we're using a colorized ls
 if [[ $OSTYPE =~ "darwin" ]]; then
