@@ -88,6 +88,10 @@ rebuild_prompt() {
     PS1="${host_color}\A [${branch}\W]>${reset} "
 }
 
+alias gd="git diff"
+alias gl="git -c mailmap.file=${HOME}/.mailmap log --graph --pretty='tformat:%C(green)%ar{%C(reset)%C(bold blue)%aN%C(reset){%C(red)%d%C(reset) %s' | sed -e 's/ ago{/{/' | column -t -s '{' | less -FXSR"
+alias gs="git status"
+
 # Make sure we're using a colorized ls
 if [[ $OSTYPE =~ "darwin" ]]; then
     alias ls='ls -Gh'
