@@ -248,7 +248,7 @@ done
 if [ ${OS} = "Darwin" ]; then
   pear_channel pear.pdepend.org pear.phpmd.org pear.phpunit.de \
     components.ez.no pear.symfony-project.com pear.phpundercontrol.org \
-    pear.symfony.com
+    pear.symfony.com pear.netpirates.net
   pear_install PHP_Depend pdepend/PHP_Depend-beta
   pear_install PHP_PMD phpmd/PHP_PMD-alpha
   pear_install phpcpd phpunit/phpcpd
@@ -256,6 +256,7 @@ if [ ${OS} = "Darwin" ]; then
   pear_install PHP_CodeSniffer
   pear_install PHP_CodeBrowser phpunit/PHP_CodeBrowser-alpha
   pear_install PHPUnit phpunit/PHPUnit
+  pear_install pear.netpirates.net/phpDox
 fi
 
 # Sort out the bin directory
