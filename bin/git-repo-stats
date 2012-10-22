@@ -3,53 +3,78 @@
 use strict;
 use warnings;
 
-my $MODE = 'name';
-my $SORT_BY = 'log';
+my %stats = &stats;
+my %totals = &totals(%stats);
+my @authors = keys %{$stats{'log'}};
 
-my %overall;
-foreach my $file (&files) {
-    my %blame = &blame($file);
-    my %log = &log($file);
-
-    foreach (keys %{$blame{$MODE}}) {
-        if ($MODE eq 'name' && /^(.*) & (.*)$/o) {
-            $overall{'blame'}{$1} += $blame{$MODE}{$_} / 2;
-            $overall{'blame'}{$2} += $blame{$MODE}{$_} / 2;
-        } else {
-            $overall{'blame'}{$_} += $blame{$MODE}{$_};
-        }
-        $overall{'blame'}{'TOTAL'} += $blame{$MODE}{$_};
-    }
-    foreach (keys %{$log{$MODE}}) {
-        if ($MODE eq 'name' && /^(.*) & (.*)$/o) {
-            $overall{'log'}{$1} += $log{$MODE}{$_} / 2;
-            $overall{'log'}{$2} += $log{$MODE}{$_} / 2;
-        } else {
-            $overall{'log'}{$_} += $log{$MODE}{$_};
-        }
-        $overall{'log'}{'TOTAL'} += $log{$MODE}{$_};
+# Figure out the column widths
+my $col0_length = length("Author");
+my $col1_length = length("Current");
+my $col2_length = length("Historical");
+foreach my $author (@authors) {
+    if (length($author) > $col0_length) {
+        $col0_length = length($author);
     }
 }
 
-my %combined;
-foreach my $source (keys %overall) {
-    foreach my $author (keys %{$overall{$source}}) {
-        if ($author ne 'TOTAL') {
-            $combined{$source}{$author} = {
-                'raw' => $overall{$source}{$author},
-                'pct' => ($overall{$source}{$author} / $overall{$source}{'TOTAL'}) * 100,
-            };
-        }
-    }
+# Output
+my $line_format = "% -${col0_length}s % ${col1_length}s % ${col2_length}s\n";
+printf($line_format, "Author", "Current", "Historical");
+print "" . ("-" x ($col0_length + $col1_length + $col2_length + 2)) . "\n";
+foreach my $author (sort {$stats{'blame'}{$b} <=> $stats{'blame'}{$a}} @authors) {
+    printf(
+        $line_format,
+        $author,
+        sprintf('%.2f%%', ($stats{'blame'}{$author} / $totals{'blame'}) * 100),
+        sprintf('%.2f%%', ($stats{'log'}{$author} / $totals{'log'}) * 100)
+    );
 }
 
-foreach (sort { $combined{$SORT_BY}{$b}{'pct'} <=> $combined{$SORT_BY}{$a}{'pct'} } keys %{$combined{$SORT_BY}}) {
-    printf("%s %0.3f%%\n", $_, $combined{$SORT_BY}{$_}{'pct'});
+sub stats {
+    my %stats;
+
+    my $mailmap = '';
+    if (-f "$ENV{HOME}/.mailmap") {
+        $mailmap = "-c mailmap.file=$ENV{HOME}/.mailmap"
+    } else {
+        my $git_root = `git rev-parse --show-toplevel`; chomp $git_root;
+        if (-d $git_root && -d "$git_root/.mailmap") {
+            $mailmap = "-c mailmap.file=$git_root/.mailmap"
+        }
+    }
+
+    foreach my $file (&files) {
+        my %blame = &blame($file, $mailmap);
+        my %log = &log($file, $mailmap);
+
+        foreach (keys %log) {
+            $stats{'log'}{$_} += $log{$_};
+            $stats{'blame'}{$_} = 0 unless $stats{'blame'}{$_};
+        }
+        foreach (keys %blame) {
+            $stats{'blame'}{$_} += $blame{$_};
+        }
+    }
+    return %stats;
+}
+
+sub totals {
+    my %stats = @_;
+
+    my %totals;
+    foreach my $author (keys %{$stats{'blame'}}) {
+        $totals{'blame'} += $stats{'blame'}{$author};
+    }
+    foreach my $author (keys %{$stats{'log'}}) {
+        $totals{'log'} += $stats{'log'}{$author};
+    }
+
+    return %totals;
 }
 
 sub files {
     my @files;
-    if (open(LS, "git ls-files|")) {
+    if (open(LS, "git grep --cached -I -l -e ''|")) {
         while (<LS>) {
             chomp;
             if (-f $_) {
@@ -62,20 +87,14 @@ sub files {
 
 sub blame {
     my $file = shift;
+    my $mailmap = shift;
 
     my %stats;
-    my $author;
-    my $author_email;
-    if (open(BLAME, "git blame --line-porcelain $file|")) {
+    if (open(BLAME, "git $mailmap blame --line-porcelain $file|")) {
         while (<BLAME>) {
-            chomp;
             if (/^author (.*)$/o) {
-                $author = $1;
-            } elsif (/^author-mail <(.*)>$/o) {
-                $author_email = $1;
-            } elsif (/^committer /o) {
-                $stats{'name'}{$author}++;
-                $stats{'email'}{$author_email}++;
+                chomp;
+                $stats{$1}++;
             }
         }
     }
@@ -84,22 +103,19 @@ sub blame {
 
 sub log {
     my $file = shift;
+    my $mailmap = shift;
 
     my %stats;
     my $author;
-    my $author_email;
-    if (open(LOG, "git log --stat --format='format:author %an%nauthor-mail %ae' $file|")) {
+    if (open(LOG, "git $mailmap log --stat --format='format:author %aN' $file|")) {
         while (<LOG>) {
             chomp;
             if (/^author (.*)$/o) {
                 $author = $1;
-            } elsif (/^author-mail (.*)$/o) {
-                $author_email = $1;
             } elsif (/^ 1 file changed(?:, (\d+) insertions?...)?(?:, (\d+) deletions?...)?/o) {
                 my $inserts = $1 || 0;
                 my $deletes = $2 || 0;
-                $stats{'name'}{$author} += ($inserts + $deletes);
-                $stats{'email'}{$author_email} += ($inserts + $deletes);
+                $stats{$author} += ($inserts + $deletes);
             }
         }
     }
