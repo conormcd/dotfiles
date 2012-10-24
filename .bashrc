@@ -92,6 +92,7 @@ rebuild_prompt() {
 alias gd="git diff"
 alias gl="pretty_git_log"
 alias gs="git status"
+alias poopd=popd
 pretty_git_log() {
     local _time="%C(green)%ar{%C(reset)"
     local _author="%C(bold blue)%aN%C(reset){"
