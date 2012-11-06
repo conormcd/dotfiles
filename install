@@ -256,7 +256,7 @@ if [ ${OS} = "Darwin" ]; then
   pear_install PHP_CodeSniffer
   pear_install PHP_CodeBrowser phpunit/PHP_CodeBrowser-alpha
   pear_install PHPUnit phpunit/PHPUnit
-  pear_install pear.netpirates.net/phpDox
+  pear_install phpDox pear.netpirates.net/phpDox-alpha
 fi
 
 # Sort out the bin directory
