@@ -92,6 +92,7 @@ peli
 perl
 php
 pid
+pidfile
 plugin
 png
 podcast
