@@ -90,8 +90,13 @@ rebuild_prompt() {
 
 # Git aliases
 alias gd="git diff"
+alias gdc="git diff --cached"
+alias gdcw="git diff -u -b -w --cached"
+alias gdw="git diff -u -b -w"
+alias gdwc="git diff -u -b -w --cached"
 alias gl="pretty_git_log"
 alias gs="git status"
+alias master="git checkout master"
 alias poopd=popd
 pretty_git_log() {
     local _time="%C(green)%ar{%C(reset)"
