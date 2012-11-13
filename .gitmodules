@@ -49,3 +49,6 @@
 [submodule ".vim/bundle/Command-T"]
 	path = .vim/bundle/Command-T
 	url = git://github.com/wincent/Command-T.git
+[submodule ".vim/bundle/vim-orgmode"]
+	path = .vim/bundle/vim-orgmode
+	url = git://github.com/jceb/vim-orgmode.git
