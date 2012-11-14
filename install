@@ -137,7 +137,7 @@ pkg() {
 pear_channel() {
   for channel in $*; do
     if ! pear channel-info ${channel} > /dev/null 2>&1; then
-      cmd sudo pear channel-discover ${channel}
+      cmd pear channel-discover ${channel}
     fi
   done
 }
@@ -152,7 +152,7 @@ pear_install() {
   fi
   if which pear > /dev/null 2>&1; then
     if [ "X$(pear list -a | grep ^${package_name}\ )X" = "XX" ]; then
-      cmd sudo pear install --alldeps ${package_source}
+      cmd pear install --alldeps ${package_source}
     fi
   else
     pkg php
@@ -252,12 +252,10 @@ if [ ${OS} = "Darwin" ]; then
   pear_channel pear.pdepend.org pear.phpmd.org pear.phpunit.de \
     components.ez.no pear.symfony-project.com pear.phpundercontrol.org \
     pear.symfony.com pear.netpirates.net
-  pear_install PHP_Depend pdepend/PHP_Depend-beta
-  pear_install PHP_PMD phpmd/PHP_PMD-alpha
+  pear_install PHP_PMD phpmd/PHP_PMD
   pear_install phpcpd phpunit/phpcpd
-  pear_install PhpDocumentor PHPDocumentor
   pear_install PHP_CodeSniffer
-  pear_install PHP_CodeBrowser phpunit/PHP_CodeBrowser-alpha
+  pear_install PHP_CodeBrowser phpunit/PHP_CodeBrowser
   pear_install PHPUnit phpunit/PHPUnit
   pear_install phpDox pear.netpirates.net/phpDox-alpha
 fi
