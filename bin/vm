@@ -11,6 +11,22 @@ cmd() {
     VBoxManage $*
 }
 
+# Check if it's a Vagrant image
+is_vagrant() {
+    uuid_or_name=$1
+
+    local _dir
+
+    for _dir in $(cmd showvminfo ${uuid_or_name} | grep 'Host path:' | sed -e 's/^.*Host path: .//' -e 's/. .*//')
+    do
+        if [ -f ${_dir}/.vagrant ]
+        then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # Output the help message
 cmd_help() {
     if [ $# -gt 0 ]; then
@@ -54,6 +70,10 @@ HELP
 cmd_kill() {
     for uuid_or_name in $*; do
         cmd controlvm ${uuid_or_name} poweroff
+        if is_vagrant ${uuid_or_name}
+        then
+            cmd unregistervm --delete ${uuid_or_name}
+        fi
     done
 }
 
