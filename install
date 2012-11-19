@@ -62,7 +62,7 @@ pkg() {
             ;;
           (php)
             package_name=php54
-            flags="--with-mysql --with-pgsql --with-fpm --with-intl"
+            flags="--with-mysql --with-pgsql --with-fpm"
             ;;
           (vagrant)
             installer="gem"
