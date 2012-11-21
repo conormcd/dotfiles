@@ -283,6 +283,7 @@ symlink .bash_login
 symlink .bashrc
 symlink .cvsignore
 symlink .inputrc
+symlink .mailmap
 if bytemark_box; then symlink .muttrc; fi
 symlink .tcsh
 symlink .tcshrc
