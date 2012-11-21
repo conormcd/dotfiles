@@ -35,6 +35,43 @@ cmd() {
   fi
 }
 
+decrypt() {
+  local file=$1
+  local pass_file=${HOME}/.dotfiles_password
+
+  if ! which openssl > /dev/null 2>&1; then
+    echo "Can't encrypt or decrypt without openssl"
+    return 1
+  fi
+  if [ ! -f ${pass_file} ]; then
+    echo "Can't encrypt or decrypt without ${pass_file}"
+    return 1
+  fi
+  if [ "X$(echo ${file} | grep '\.enc$')X" = "XX" ]; then
+    echo "Refusing to decrypt a file unless it ends in .enc"
+    return 1
+  fi
+  file=$(echo ${file} | sed -e 's/\.enc$//')
+
+  cmd openssl enc -d -aes-256-cbc -a -salt -in ${file}.enc -out ${file} -pass file:${pass_file}
+}
+
+encrypt() {
+  local file=$1
+  local pass_file=${HOME}/.dotfiles_password
+
+  if ! which openssl > /dev/null 2>&1; then
+    echo "Can't encrypt or decrypt without openssl"
+    return 1
+  fi
+  if [ ! -f ${pass_file} ]; then
+    echo "Can't encrypt or decrypt without ${pass_file}"
+    return 1
+  fi
+
+  cmd openssl enc -aes-256-cbc -a -salt -in ${file} -out ${file}.enc -pass file:${pass_file}
+}
+
 # Ensure a package is installed
 pkg() {
   for package_name in $*; do
@@ -181,6 +218,37 @@ symlink() {
 #
 # Now work through all the things we need.
 #
+
+# First, sort out any encrypted files
+for cipherfile in $(find ${root} -type f -name '*.enc'); do
+  plainfile=$(echo ${cipherfile} | sed -e 's/\.enc$//')
+
+  # Make sure the plaintext is ignored by git to prevent accidental checkins
+  gitignore=${root}/.gitignore
+  relative=$(echo ${plainfile} | sed -e "s,^${root}/*,,")
+  if [ "X$(grep ${relative} ${gitignore})X" = "XX" ]; then
+    if [ ${DRY_RUN:-unset} = "unset" ]; then
+      echo ${relative} >> ${gitignore}
+      sort ${gitignore} > ${gitignore}.tmp
+      mv ${gitignore}.tmp ${gitignore}
+    else
+      echo "[Add ${relative} to ${gitignore}]"
+    fi
+  fi
+
+  if [ -f ${plainfile} ]; then
+    if [ ${plainfile} -nt ${cipherfile} ]; then
+      encrypt ${plainfile}
+      cmd touch ${plainfile} ${cipherfile}
+    elif [ ${cipherfile} -nt ${plainfile} ]; then
+      decrypt ${cipherfile}
+      cmd touch ${plainfile} ${cipherfile}
+    fi
+  else
+    decrypt ${cipherfile}
+    cmd touch ${plainfile} ${cipherfile}
+  fi
+done
 
 # If X11 isn't installed, we need to prompt for XQuartz before going further.
 if [ ${OS} = "Darwin" ]; then
