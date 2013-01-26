@@ -101,7 +101,7 @@ pkg() {
             package_name=php54
             flags="--with-mysql --with-pgsql --with-fpm"
             ;;
-          (vagrant)
+          (bundler|vagrant)
             installer="gem"
             ;;
           (xdebug|xhprof)
@@ -267,9 +267,9 @@ fi
 # Install the packages we need
 pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
-  pkg boto go graphviz hub httpie imagick mercurial mysql nginx paramiko php \
-    postgresql pstree pyflakes redis requests requests-oauth ruby tornado \
-    vagrant xdebug xhprof
+  pkg boto bundler go graphviz hub httpie imagick mercurial mysql nginx \
+    paramiko php postgresql pstree pyflakes redis requests requests-oauth ruby \
+    tornado vagrant xdebug xhprof
 fi
 if bytemark_box; then
   pkg mutt
