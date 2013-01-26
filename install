@@ -3,7 +3,7 @@
 set -o errexit
 set -o nounset
 
-BREW_TAPS="adamv/alt homebrew/dupes homebrew/versions josegonzalez/php"
+BREW_TAPS="homebrew/dupes homebrew/versions josegonzalez/php"
 HOSTNAME=$(hostname)
 OS=$(uname -s)
 
