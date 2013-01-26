@@ -125,6 +125,11 @@ pkg() {
             # Now install the gem if necessary
             if [ "$(gem list ${package_name} | grep ${package_name})" = "" ]; then
               cmd gem install ${package_name}
+
+              # Relink ruby to ensure that any of the binaries installed by the
+              # gem are linked into /usr/local/bin
+              cmd brew unlink ruby
+              cmd brew link ruby
             fi
             ;;
           (pip)
