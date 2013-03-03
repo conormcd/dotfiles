@@ -265,6 +265,23 @@ if [ ${OS} = "Darwin" ]; then
   fi
 fi
 
+# Sort out the bin directory
+[ -d ${HOME}/bin ] || cmd mkdir ${HOME}/bin
+for file in $(find ${root}/bin -type f); do
+  filename=$(basename ${file})
+  case ${filename} in
+    (ipsort|mailtail|mark_as_read)
+      if bytemark_box; then
+        symlink ${file} bin/$(basename ${file})
+      fi
+      ;;
+    (*)
+      symlink ${file} bin/$(basename ${file})
+      ;;
+  esac
+done
+symlink modules/git-wip/git-wip bin/git-wip
+
 # Install the packages we need
 pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
@@ -334,20 +351,3 @@ if [ ${OS} = "Darwin" ]; then
   pear_install PHPUnit phpunit/PHPUnit
   pear_install phpDox pear.netpirates.net/phpDox-alpha
 fi
-
-# Sort out the bin directory
-[ -d ${HOME}/bin ] || cmd mkdir ${HOME}/bin
-for file in $(find ${root}/bin -type f); do
-  filename=$(basename ${file})
-  case ${filename} in
-    (ipsort|mailtail|mark_as_read)
-      if bytemark_box; then
-        symlink ${file} bin/$(basename ${file})
-      fi
-      ;;
-    (*)
-      symlink ${file} bin/$(basename ${file})
-      ;;
-  esac
-done
-symlink modules/git-wip/git-wip bin/git-wip
