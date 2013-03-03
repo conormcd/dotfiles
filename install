@@ -102,6 +102,9 @@ pkg() {
             package_name=php54
             flags="--with-mysql --with-pgsql --with-fpm"
             ;;
+          (ruby)
+            package_name=ruby193
+            ;;
           (bundler|twig|vagrant)
             installer="gem"
             ;;
@@ -119,9 +122,7 @@ pkg() {
             ;;
           (gem)
             # Make sure the Homebrew ruby is installed first.
-            if ! brew list ruby > /dev/null; then
-              cmd brew install ruby
-            fi
+            (pkg ruby)
 
             # Now install the gem if necessary
             if [ "$(gem list ${package_name} | grep ${package_name})" = "" ]; then
@@ -129,8 +130,11 @@ pkg() {
 
               # Relink ruby to ensure that any of the binaries installed by the
               # gem are linked into /usr/local/bin
-              cmd brew unlink ruby
-              cmd brew link ruby
+              _ruby_pkg=$(brew which-package ${BREW_PREFIX}/bin/ruby)
+              if [ "X${_ruby_pkg}X" != "XX" ]; then
+                cmd brew unlink ${_ruby_pkg}
+                cmd brew link ${_ruby_pkg}
+              fi
             fi
             ;;
           (pip)
