@@ -292,7 +292,7 @@ pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
   pkg apc boto bundler go graphviz hub httpie imagick mercurial mysql nginx \
     paramiko php postgresql pstree pyflakes redis requests requests-oauth ruby \
-    tornado twig vagrant xdebug xhprof
+    tornado twig vagrant watch xdebug xhprof
 fi
 if bytemark_box; then
   pkg mutt
