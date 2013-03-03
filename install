@@ -96,6 +96,7 @@ pkg() {
             installer="pip"
             ;;
           (imagick)
+            (pkg php)
             package_name=php54-imagick
             ;;
           (php)
