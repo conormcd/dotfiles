@@ -3,6 +3,7 @@
 set -o errexit
 set -o nounset
 
+BREW_PREFIX=$(brew --prefix)
 BREW_TAPS="homebrew/dupes homebrew/versions josegonzalez/php"
 HOSTNAME=$(hostname)
 OS=$(uname -s)
@@ -18,7 +19,7 @@ bash_completion() {
   completion_file=$1
   completion_dir=/etc/bash_completion.d
   if which brew > /dev/null 2>&1; then
-    completion_dir="$(brew --prefix)${completion_dir}"
+    completion_dir="${BREW_PREFIX}${completion_dir}"
   fi
   symlink ${completion_file} ${completion_dir}/$(basename ${completion_file})
 }
@@ -304,13 +305,13 @@ bash_completion modules/completion-ruby/completion-rake
 bash_completion modules/completion-ruby/completion-ruby
 bash_completion modules/vagrant-bash-completion/vagrant
 if [ ${OS} = "Darwin" ]; then
-  bash_completion $(brew --prefix)/Library/Contributions/brew_bash_completion.sh
+  bash_completion ${BREW_PREFIX}/Library/Contributions/brew_bash_completion.sh
 fi
 
 # Prune the bash completions to the things we have
 completion_dir=/etc/bash_completion.d
 if which brew > /dev/null 2>&1; then
-  completion_dir="$(brew --prefix)${completion_dir}"
+  completion_dir="${BREW_PREFIX}${completion_dir}"
 fi
 for _completion_file in $(find ${completion_dir} -type l -o -type f); do
   _have=$(awk '/^have / { print $2; exit}' ${_completion_file})
