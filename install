@@ -109,7 +109,7 @@ pkg() {
           (bundler|twig|vagrant)
             installer="gem"
             ;;
-          (xdebug|xhprof)
+          (apc|xdebug|xhprof)
             package_name="php54-${package_name}"
             ;;
         esac
@@ -290,7 +290,7 @@ symlink modules/git-wip/git-wip bin/git-wip
 # Install the packages we need
 pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
-  pkg boto bundler go graphviz hub httpie imagick mercurial mysql nginx \
+  pkg apc boto bundler go graphviz hub httpie imagick mercurial mysql nginx \
     paramiko php postgresql pstree pyflakes redis requests requests-oauth ruby \
     tornado twig vagrant xdebug xhprof
 fi
