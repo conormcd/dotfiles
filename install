@@ -283,6 +283,11 @@ for file in $(find ${root}/bin -type f); do
         symlink ${file} bin/$(basename ${file})
       fi
       ;;
+    (brew-*)
+      if ! bytemark_box; then
+        symlink ${file} bin/$(basename ${file})
+      fi
+      ;;
     (*)
       symlink ${file} bin/$(basename ${file})
       ;;
