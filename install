@@ -115,6 +115,9 @@ pkg() {
           (apc|xdebug|xhprof)
             package_name="php54-${package_name}"
             ;;
+          (python)
+            flags="--with-dtrace"
+            ;;
         esac
 
         # Trigger the install
@@ -142,20 +145,15 @@ pkg() {
             fi
             ;;
           (pip)
-            if ! which pip > /dev/null 2>&1; then
-              if [ ${DRY_RUN:-set} != "set" ]; then
-                curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | sudo python
-              else
-                echo "[Install pip]"
-              fi
-            fi
+            (pkg python)
 
-            package_dir=/Library/Python/2.7/site-packages/${package_name}
-            if [ ${package_name} = "requests-oauth" ]; then
-              package_dir=/Library/Python/2.7/site-packages/oauth_hook
-            fi
-            if [ ! -d ${package_dir} ]; then
-              cmd sudo pip install ${package_name}
+            if [ "$(pip freeze | grep ${package_name}==)" = "" ]; then
+              if [ "${PIP_UPGRADED:-0}" != "1" ]; then
+                cmd pip install --upgrade distribute
+                cmd pip install --upgrade pip
+                export PIP_UPGRADED=1
+              fi
+              cmd pip install ${package_name}
             fi
             ;;
           (*)
@@ -299,8 +297,8 @@ symlink modules/git-wip/git-wip bin/git-wip
 pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
   pkg apc boto bundler go graphviz hub httpie imagick mercurial mysql nginx \
-    paramiko php postgresql pstree pyflakes redis requests requests-oauth ruby \
-    tornado twig vagrant watch xdebug xhprof
+    paramiko php postgresql pstree pyflakes python redis requests \
+    requests-oauth ruby tornado twig vagrant watch xdebug xhprof
 fi
 if bytemark_box; then
   pkg mutt
