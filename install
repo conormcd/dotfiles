@@ -95,7 +95,7 @@ pkg() {
         installer="brew"
         flags=""
         case ${package_name} in
-          (boto|httpie|paramiko|pyflakes|requests|requests-oauth|tornado)
+          (boto|httpie|jedi|paramiko|pyflakes|requests|requests-oauth|tornado)
             installer="pip"
             ;;
           (imagick)
@@ -296,8 +296,8 @@ symlink modules/git-wip/git-wip bin/git-wip
 # Install the packages we need
 pkg bash bash-completion ctags curl gnupg git nmap vim wget
 if [ ${OS} = "Darwin" ]; then
-  pkg apc boto bundler go graphviz hub httpie imagick mercurial mysql nginx \
-    paramiko php postgresql pstree pyflakes python redis requests \
+  pkg apc boto bundler go graphviz hub httpie imagick jedi mercurial mysql \
+    nginx paramiko php postgresql pstree pyflakes python redis requests \
     requests-oauth ruby tornado twig vagrant watch xdebug xhprof
 fi
 if bytemark_box; then
