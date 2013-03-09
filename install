@@ -98,6 +98,9 @@ pkg() {
           (boto|httpie|jedi|paramiko|pyflakes|requests|requests-oauth|tornado)
             installer="pip"
             ;;
+          (bash-completion)
+            package_name=bash-completion2
+            ;;
           (imagick)
             (pkg php)
             package_name=php54-imagick
@@ -335,20 +338,6 @@ bash_completion modules/vagrant-bash-completion/vagrant
 if [ ${OS} = "Darwin" ]; then
   bash_completion ${BREW_PREFIX}/Library/Contributions/brew_bash_completion.sh
 fi
-
-# Prune the bash completions to the things we have
-completion_dir=/etc/bash_completion.d
-if which brew > /dev/null 2>&1; then
-  completion_dir="${BREW_PREFIX}${completion_dir}"
-fi
-for _completion_file in $(find ${completion_dir} -type l -o -type f); do
-  _have=$(awk '/^have / { print $2; exit}' ${_completion_file})
-  if [ -n "${_have}" ]; then
-    if ! type ${_have} > /dev/null 2>&1; then
-      cmd rm ${_completion_file}
-    fi
-  fi
-done
 
 # PHP extras
 if [ ${OS} = "Darwin" ]; then
