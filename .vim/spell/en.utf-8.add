@@ -1,4 +1,5 @@
 Boto
+DTrace
 DURC
 DURC's
 Debian
@@ -11,6 +12,7 @@ Josh
 MCollective
 McDermottroe
 MySQL
+NetBSD
 OAuth
 PECL
 PostgreSQL
@@ -118,6 +120,7 @@ setup
 sha
 sha1
 sighters
+solaris
 speedup
 ssh
 stderr
