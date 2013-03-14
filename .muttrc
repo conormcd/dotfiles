@@ -31,6 +31,7 @@ set hostname = 'mcdermottroe.com'
 set include = yes
 set index_format = "%S  %{%d %b}  %-18.18F  %s"
 set mark_old = no
+set markers = no
 set mask = '^(\.INBOX.*|)$'
 set mbox = '~/Maildir'
 set mbox_type = 'maildir'
