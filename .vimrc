@@ -82,7 +82,7 @@ let g:syntastic_c_compiler_options = ' -std=c99'
 
 " Turn on spell checking
 setlocal spell spelllang=en_gb
-autocmd FileType diff,gitconfig,gitrebase setlocal nospell
+autocmd FileType diff,gitconfig,gitrebase,procmail setlocal nospell
 function! ToggleSpelling()
 	if &spell
 		set nospell
