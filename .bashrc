@@ -27,6 +27,11 @@ export EDITOR=vim
 HISTFILE="${HOME}/.history"
 export LANG=en_IE.UTF-8
 export LC_COLLATE=C
+export PERL_LOCAL_LIB_ROOT="$HOME/.perl5lib"
+export PERL_MB_OPT="--install_base $HOME/.perl5lib"
+export PERL_MM_OPT="INSTALL_BASE=$HOME/.perl5lib"
+export PERL5LIB="$HOME/.perl5lib/lib/perl5/darwin-2level:$HOME/.perl5lib/lib/perl5"
+export PATH="$PATH:/Users/conor/.perl5lib/bin"
 
 # Include completion files
 if [[ -f /etc/bash_completion ]]; then
