@@ -5,7 +5,7 @@ set -o nounset
 
 BREW_PREFIX=""
 if which brew > /dev/null 2>&1; then
-  BREW_PREFIX=$(brew --prefix)
+  BREW_PREFIX=$(brew --prefix )
 fi
 BREW_TAPS="homebrew/dupes homebrew/versions josegonzalez/php"
 HOSTNAME=$(hostname)
