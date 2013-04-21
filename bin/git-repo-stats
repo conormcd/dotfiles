@@ -3,6 +3,11 @@
 use strict;
 use warnings;
 
+use Getopt::Long;
+
+my $EXCLUDE_BLANK_LINES = 0;
+GetOptions("exclude-blank-lines" => \$EXCLUDE_BLANK_LINES) || exit 1;
+
 my %stats = &stats;
 my %totals = &totals(%stats);
 my @authors = keys %{$stats{'log'}};
@@ -89,12 +94,30 @@ sub blame {
     my $file = shift;
     my $mailmap = shift;
 
-    my %stats;
+    my @lines;
     if (open(BLAME, "git $mailmap blame --line-porcelain $file|")) {
+        my $line;
         while (<BLAME>) {
-            if (/^author (.*)$/o) {
-                chomp;
-                $stats{$1}++;
+            chomp;
+            if (/^[0-9a-f]+ \d+ \d+(?: \d+)?$/o) {
+                # [Commit hash] [original line] [final line] [number of lines]
+                push @lines, $line;
+                $line = {};
+            } else {
+                if (/^([a-zA-Z0-9-]+)\s+(.*)$/) {
+                    $line->{$1} = $2;
+                } else {
+                    $line->{'line'} = $_;
+                }
+            }
+        }
+    }
+
+    my %stats;
+    foreach my $line (@lines) {
+        if (defined($line)) {
+            unless ($EXCLUDE_BLANK_LINES && $line->{'line'} =~ /^\s*$/o) {
+                $stats{$line->{'author'}}++;
             }
         }
     }
