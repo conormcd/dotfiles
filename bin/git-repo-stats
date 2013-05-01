@@ -5,8 +5,12 @@ use warnings;
 
 use Getopt::Long;
 
+my $PATH_PREFIX = '';
 my $EXCLUDE_BLANK_LINES = 0;
 GetOptions("exclude-blank-lines" => \$EXCLUDE_BLANK_LINES) || exit 1;
+if (@ARGV) {
+    $PATH_PREFIX = shift(@ARGV);
+}
 
 my %stats = &stats;
 my %totals = &totals(%stats);
@@ -82,7 +86,7 @@ sub files {
     if (open(LS, "git grep --cached -I -l -e ''|")) {
         while (<LS>) {
             chomp;
-            if (-f $_) {
+            if (-f $_ && (!($PATH_PREFIX) || /^$PATH_PREFIX/)) {
                 push @files, $_;
             }
         }
