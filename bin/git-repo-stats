@@ -14,7 +14,7 @@ if (@ARGV) {
 
 my %stats = &stats;
 my %totals = &totals(%stats);
-my @authors = keys %{$stats{'log'}};
+my @authors = &authors(%stats);
 
 # Figure out the column widths
 my $col0_length = length("Author");
@@ -30,13 +30,31 @@ foreach my $author (@authors) {
 my $line_format = "% -${col0_length}s % ${col1_length}s % ${col2_length}s\n";
 printf($line_format, "Author", "Current", "Historical");
 print "" . ("-" x ($col0_length + $col1_length + $col2_length + 2)) . "\n";
-foreach my $author (sort {$stats{'blame'}{$b} <=> $stats{'blame'}{$a}} @authors) {
+foreach my $author (@authors) {
     printf(
         $line_format,
         $author,
-        sprintf('%.2f%%', ($stats{'blame'}{$author} / $totals{'blame'}) * 100),
-        sprintf('%.2f%%', ($stats{'log'}{$author} / $totals{'log'}) * 100)
+        &percentage($totals{'blame'}, $stats{'blame'}{$author}),
+        &percentage($totals{'log'}, $stats{'log'}{$author})
     );
+}
+
+sub authors {
+    my %stats = @_;
+
+    my %authors;
+    foreach (keys %{$stats{'blame'}}) { $authors{$_} = 1 }
+    foreach (keys %{$stats{'log'}}) { $authors{$_} = 1 }
+
+    return sort {$stats{'blame'}{$b} <=> $stats{'blame'}{$a}} keys %authors;
+}
+
+sub percentage {
+    my $total = shift;
+    my $value = shift || 0;
+
+    return "0%" unless $total;
+    return sprintf('%.2f%%', ($value / $total) * 100)
 }
 
 sub stats {
@@ -58,7 +76,6 @@ sub stats {
 
         foreach (keys %log) {
             $stats{'log'}{$_} += $log{$_};
-            $stats{'blame'}{$_} = 0 unless $stats{'blame'}{$_};
         }
         foreach (keys %blame) {
             $stats{'blame'}{$_} += $blame{$_};
