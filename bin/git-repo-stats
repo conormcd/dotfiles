@@ -7,12 +7,17 @@ use Getopt::Long;
 
 my $PATH_PREFIX = '';
 my $EXCLUDE_BLANK_LINES = 0;
-GetOptions("exclude-blank-lines" => \$EXCLUDE_BLANK_LINES) || exit 1;
+my $EXCLUDE_PATTERN;
+GetOptions(
+    "exclude-blank-lines" => \$EXCLUDE_BLANK_LINES,
+    "exclude-pattern=s" => \$EXCLUDE_PATTERN
+) || exit 1;
 if (@ARGV) {
     $PATH_PREFIX = shift(@ARGV);
 }
+$EXCLUDE_PATTERN = qr/$EXCLUDE_PATTERN/o;
 
-my %stats = &stats;
+my %stats = &stats($PATH_PREFIX);
 my %totals = &totals(%stats);
 my @authors = &authors(%stats);
 
@@ -46,7 +51,9 @@ sub authors {
     foreach (keys %{$stats{'blame'}}) { $authors{$_} = 1 }
     foreach (keys %{$stats{'log'}}) { $authors{$_} = 1 }
 
-    return sort {$stats{'blame'}{$b} <=> $stats{'blame'}{$a}} keys %authors;
+    return sort {
+        ($stats{'blame'}{$b} || 0) <=> ($stats{'blame'}{$a} || 0)
+    } keys %authors;
 }
 
 sub percentage {
@@ -57,9 +64,7 @@ sub percentage {
     return sprintf('%.2f%%', ($value / $total) * 100)
 }
 
-sub stats {
-    my %stats;
-
+sub mailmap {
     my $mailmap = '';
     if (-f "$ENV{HOME}/.mailmap") {
         $mailmap = "-c mailmap.file=$ENV{HOME}/.mailmap"
@@ -69,18 +74,18 @@ sub stats {
             $mailmap = "-c mailmap.file=$git_root/.mailmap"
         }
     }
+    return $mailmap;
+}
 
-    foreach my $file (&files) {
-        my %blame = &blame($file, $mailmap);
-        my %log = &log($file, $mailmap);
+sub stats {
+    my $prefix = shift;
 
-        foreach (keys %log) {
-            $stats{'log'}{$_} += $log{$_};
-        }
-        foreach (keys %blame) {
-            $stats{'blame'}{$_} += $blame{$_};
-        }
-    }
+    my %stats;
+    my %blame = &blame($prefix);
+    my %log = &log($prefix);
+    $stats{'blame'} = \%blame;
+    $stats{'log'} = \%log;
+
     return %stats;
 }
 
@@ -99,11 +104,13 @@ sub totals {
 }
 
 sub files {
+    my $prefix = shift;
+
     my @files;
     if (open(LS, "git grep --cached -I -l -e ''|")) {
         while (<LS>) {
             chomp;
-            if (-f $_ && (!($PATH_PREFIX) || /^$PATH_PREFIX/)) {
+            if (-f $_ && (!($prefix) || /^$prefix/)) {
                 push @files, $_;
             }
         }
@@ -112,51 +119,61 @@ sub files {
 }
 
 sub blame {
-    my $file = shift;
-    my $mailmap = shift;
+    my $prefix = shift;
+    my $exclude = shift;
 
-    my @lines;
-    if (open(BLAME, "git $mailmap blame --line-porcelain $file|")) {
-        my $line;
-        while (<BLAME>) {
-            chomp;
-            if (/^[0-9a-f]+ \d+ \d+(?: \d+)?$/o) {
-                # [Commit hash] [original line] [final line] [number of lines]
-                push @lines, $line;
-                $line = {};
-            } else {
-                if (/^([a-zA-Z0-9-]+)\s+(.*)$/) {
-                    $line->{$1} = $2;
+    my $mailmap = &mailmap;
+
+    my %stats;
+    foreach my $file (&files($prefix)) {
+        my @lines;
+        if (open(BLAME, "git $mailmap blame --line-porcelain $file|")) {
+            my $line;
+            while (<BLAME>) {
+                chomp;
+                if (/^[0-9a-f]+ \d+ \d+(?: \d+)?$/o) {
+                    # [Commit hash] [original line] [final line] [number of lines]
+                    push @lines, $line;
+                    $line = {};
                 } else {
-                    $line->{'line'} = $_;
+                    if (/^([a-zA-Z0-9-]+)\s+(.*)$/) {
+                        $line->{$1} = $2;
+                    } else {
+                        $line->{'line'} = $_;
+                    }
+                }
+            }
+        }
+
+        foreach my $line (@lines) {
+            if (defined($line)) {
+                if ($EXCLUDE_BLANK_LINES && $line->{'line'} =~ /^\s*$/o) {
+                    # Skip
+                } elsif ($EXCLUDE_PATTERN && $line->{'line'} =~ $EXCLUDE_PATTERN) {
+                    # Skip
+                } else {
+                    $stats{$line->{'author'}}++;
                 }
             }
         }
     }
 
-    my %stats;
-    foreach my $line (@lines) {
-        if (defined($line)) {
-            unless ($EXCLUDE_BLANK_LINES && $line->{'line'} =~ /^\s*$/o) {
-                $stats{$line->{'author'}}++;
-            }
-        }
-    }
     return %stats;
 }
 
 sub log {
-    my $file = shift;
-    my $mailmap = shift;
+    my $prefix = shift;
+
+    my $mailmap = &mailmap;
 
     my %stats;
     my $author;
-    if (open(LOG, "git $mailmap log --stat --format='format:author %aN' $file|")) {
+    if (open(LOG, "git $mailmap log --stat --format='format:author %aN' $prefix|")) {
         while (<LOG>) {
             chomp;
             if (/^author (.*)$/o) {
                 $author = $1;
-            } elsif (/^ 1 file changed(?:, (\d+) insertions?...)?(?:, (\d+) deletions?...)?/o) {
+            } elsif (/^ \d+ files? changed(?:, (\d+) insertions?...)?(?:, (\d+) deletions?...)?/o) {
                 my $inserts = $1 || 0;
                 my $deletes = $2 || 0;
                 $stats{$author} += ($inserts + $deletes);
