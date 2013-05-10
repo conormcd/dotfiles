@@ -14,6 +14,7 @@ FreeBSD
 GWoo
 GitHub
 Helgi
+IaaS
 Josh
 MCollective
 MQS
@@ -30,6 +31,7 @@ Rathdrum
 Reetta
 SFTP
 SQLite
+SSO
 UCESSA
 URLs
 XHProf
@@ -41,6 +43,7 @@ app
 apps
 awk
 aws
+awsm
 bassham
 bipod
 blog
