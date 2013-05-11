@@ -1,0 +1,336 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+require 'set'
+
+class GitExplore
+  def initialize
+    @options = {}
+    @parser = OptionParser.new do |opts|
+      opts.banner = "Usage: git explore <#{valid_actions.join('|')}>"
+      opts.on('--exclude-blank-lines', "Don't count empty/whitespace-only lines.") do |bool|
+        @options[:exclude_blank_lines] = bool
+      end
+      opts.on('--exclude-pattern PATTERN', "Don't count lines matching this pattern.") do |pattern|
+        @options[:exclude_pattern] = /#{pattern}/
+      end
+      opts.on('--mailmap FILE', "Use a given file as a mailmap.") do |file|
+        @options[:mailmap] = file
+      end
+      opts.on('--verbose', "Show more detail") do |v|
+        @options[:verbose] = v
+      end
+    end
+
+    begin
+      @parser.parse!
+    rescue OptionParser::MissingArgument => e
+      bail(e.message)
+    end
+
+    bail("No command specified") unless ARGV.length > 0
+    cmd = ARGV.shift
+    bail("Invalid command \"#{cmd}\"") unless valid_actions.include?(cmd)
+    @command = cmd.sub(/-/, '_').to_sym
+    @command_args = ARGV.dup
+  end
+
+  def run
+    begin
+      send @command, *@command_args
+    rescue ArgumentError
+      bail("Wrong number of arguments supplied")
+    end
+  end
+
+  def author_history
+    months = []
+    log.keys.sort.reverse.each do |m|
+      month = [m]
+      log[m].keys.sort{|a, b| log[m][b] <=> log[m][a]}.each do |author|
+        if @options[:verbose]
+          month << "#{author} (#{percentage(author, log[m])})"
+        else
+          month << author
+        end
+      end
+      months << month
+    end
+
+    lines = []
+    months.each do |m|
+      line = m.shift
+      line_length = line.length
+      m.each do |author|
+        if line_length + author.length > 70
+          line += "\n       "
+          line_length = 7
+        end
+        line += " " + author
+        line_length += author.length + 1
+      end
+      lines << line
+    end
+    puts lines.join("\n")
+  end
+
+  def authored_by(author)
+    files = {}
+    lines = {}
+    blame do |file|
+      file.each do |line|
+        lines[line['filename']] ||= 0
+        lines[line['filename']] += 1
+        if line['author'] == author
+          files[line['filename']] ||= 0
+          files[line['filename']] += 1
+        end
+      end
+    end
+
+    output = []
+    files.keys.sort{|a, b| (files[b].to_f / lines[b]) <=> (files[a].to_f / lines[a])}.each do |file|
+      output << [file, percentage(files[file], lines[file])]
+    end
+    unless output.empty?
+      output = [
+        ['File', 'Percentage'],
+        ['----', '----------']
+      ] + output
+    end
+    output_table(output)
+  end
+
+  def authors
+    blames = {}
+    blame do |file|
+      file.each do |line|
+        blames[line['author']] ||= 0
+        blames[line['author']] += 1
+      end
+    end
+
+    logs = {}
+    log.each_pair do |month, authors|
+      authors.each_pair do |author, count|
+        logs[author] ||= 0
+        logs[author] += count
+      end
+    end
+
+    output = []
+    names = Set.new blames.keys + logs.keys
+    names.sort{|a,b| (blames[b] || 0) <=> (blames[a] || 0)}.each do |name|
+      output << [name, percentage(name, blames), percentage(name, logs)]
+    end
+    unless output.empty?
+      output = [
+        ['Author', 'Current', 'Historical'],
+        ['------', '-------', '----------'],
+      ] + output
+    end
+    output_table(output)
+  end
+
+  def oldest_files
+    average_age = {}
+    blame do |file|
+      sum = 0
+      count = 0
+      filename = nil
+      file.each do |line|
+        sum += line['author-time'].to_f
+        count += 1
+        filename = line['filename'] if filename.nil?
+      end
+      if count > 0
+        average_age[filename] = sum / count
+      end
+    end
+
+    count = 0
+    average_age.keys.sort{|a, b| average_age[a] <=> average_age[b]}.each do |file|
+      puts file
+      count += 1
+      break if count >= 10
+    end
+  end
+
+  private
+
+  def bail(message=nil, parser=nil)
+    if message.nil?
+      exit_status = 0
+    else
+      puts "#{message}\n\n"
+      exit_status = 1
+    end
+    if parser.nil?
+      puts @parser
+    else
+      puts parser
+    end
+    exit exit_status
+  end
+
+  def blame(&block)
+    blames = []
+    files.each do |file|
+      if blames.length < 4
+        blames << blame_file(file)
+      else
+        yield blames.shift.join.value
+      end
+    end
+    until blames.empty?
+      yield blames.shift.join.value
+    end
+  end
+
+  def blame_file(file)
+    Thread.new do
+      lines = []
+      line_data = {}
+      git = IO.popen("git #{mailmap} blame --line-porcelain #{file}")
+      git.each_line do |line|
+        line.chomp!
+        if line =~ /^[0-9a-f]+ \d+ \d+(?: \d+)?$/
+          unless line_data.empty?
+            line_data['filename'] = file
+            if @options[:exclude_blank_lines] and line_data['line'] =~ /^\s*$/
+              # Skip
+            elsif @options[:exclude_pattern] and line_data['line'] =~ @options[:exclude_pattern]
+              # Skip
+            else
+              lines << line_data
+            end
+          end
+          line_data = {}
+        else
+          if line =~ /^([a-zA-Z0-9-]+)\s+(.*)$/
+            line_data[$1] = $2
+          else
+            line_data['line'] = line.sub(/^\t/, '')
+          end
+        end
+      end
+      git.close
+      lines
+    end
+  end
+
+  def files
+    unless @files
+      @files = []
+      IO.popen("git grep --cached -I -l -e ''").each do |line|
+        line.chomp!
+        @files << line
+      end
+    end
+    @files
+  end
+
+  def log
+    unless @log
+      @log = {}
+      author = nil
+      month = nil
+      git = IO.popen("git #{mailmap} log --stat --format='format:author %aN%ndate %at'")
+      git.each_line do |line|
+        if line =~ /^author (.*)$/
+          author = $1
+        elsif line =~ /^date (\d+)$/
+          month = Time.at($1.to_i).strftime("%Y-%m")
+        elsif line =~ /^ \d+ files? changed(?:, (\d+) insertions?...)?(?:, (\d+) deletions?...)?/
+          @log[month] ||= {}
+          @log[month][author] ||= 0
+          @log[month][author] += ($1.to_i || 0) + ($2.to_i || 0)
+        end
+      end
+      git.close
+    end
+    @log
+  end
+
+  def mailmap
+    @mailmap = @options[:mailmap] if @options[:mailmap]
+    unless @mailmap
+      [root_dir, ENV['HOME']].each do |mailmap_dir|
+        mm = File.expand_path('.mailmap', mailmap_dir)
+        if File.exists?(mm)
+          @mailmap = "-c mailmap.file=#{mm}"
+        end
+      end
+    end
+    @mailmap
+  end
+
+  def output_table(table)
+    lengths = []
+    table.each_index do |row|
+      table[row].each_index do |column|
+        table[row][column] = table[row][column].to_s
+        if !lengths[column] or lengths[column] < table[row][column].to_s.length
+          lengths[column] = table[row][column].length
+        end
+      end
+    end
+
+    table.each_index do |row|
+      table[row].each_index do |column|
+        pad = lengths[column] - table[row][column].to_s.length
+        if table[row][column] =~ /^\d+(?:\.\d+)?%?$/
+          table[row][column] = (" " * pad) + table[row][column]
+        else
+          table[row][column] += (" " * pad)
+        end
+      end
+    end
+
+    output = ""
+    table.each do |row|
+      output += "\n"
+      row.each do |cell|
+        output += cell
+        output += " "
+      end
+      output.strip!
+    end
+
+    puts output
+  end
+
+  def percentage(key_or_numerator, hash_or_denominator)
+    numerator = nil
+    denominator = nil
+    if hash_or_denominator.kind_of?(Numeric)
+      numerator = key_or_numerator
+      denominator = hash_or_denominator
+    elsif hash_or_denominator.kind_of?(Hash)
+      numerator = hash_or_denominator[key_or_numerator] || 0
+      denominator = hash_or_denominator.values.reduce(0) {|s,v| s + v}
+    else
+      raise ArgumentError, "The second arg must be either a Hash or Numeric"
+    end
+    sprintf("%0.2f%%", (numerator.to_f / denominator) * 100)
+  end
+
+  def root_dir
+    @root_dir ||= %x{git rev-parse --show-toplevel}.chomp
+  end
+
+  def valid_actions
+    unless @valid_actions
+      @valid_actions = []
+      methods.each do |m|
+        if method(m).owner == self.class and m != :run
+          @valid_actions << m.to_s.sub(/_/, '-')
+        end
+      end
+      @valid_actions.sort!
+    end
+    @valid_actions
+  end
+end
+
+GitExplore.new.run
