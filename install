@@ -410,6 +410,5 @@ if [ ${OS} = "Darwin" ]; then
   pear_install PHP_CodeSniffer
   pear_install PHP_CodeBrowser phpunit/PHP_CodeBrowser
   pear_install PHPUnit phpunit/PHPUnit
-  pear_install phpDox pear.netpirates.net/phpDox-alpha
 fi
 
