@@ -114,7 +114,7 @@ pkg() {
         installer="brew"
         flags=""
         case ${package_name} in
-          (boto|httpie|jedi|paramiko|pyflakes|requests|requests-oauth|tornado)
+          (boto|httpie|jedi|paramiko|pyflakes|requests|requests-oauth|tornado|virtualenv)
             installer="pip"
             ;;
           (bash-completion)
@@ -339,7 +339,8 @@ if [ ${OS} = "Darwin" ]; then
   pkg Crypt::SSLeay JSON Net::GitHub Net::Twitter WWW::Mechanize apc boto \
     bundler common::sense go graphviz httpie hub imagick jedi local::lib \
     mercurial mysql nginx paramiko perl php postgresql pstree pyflakes python \
-    redis requests requests-oauth ruby tornado twig vagrant watch xdebug xhprof
+    redis requests requests-oauth ruby tornado twig vagrant virtualenv watch \
+    xdebug xhprof
 fi
 if bytemark_box; then
   pkg mutt
