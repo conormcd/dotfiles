@@ -177,8 +177,18 @@ pkg() {
 
               # Relink ruby to ensure that any of the binaries installed by the
               # gem are linked into /usr/local/bin
+              _relink=0
               _ruby_pkg=$(brew which-package ${BREW_PREFIX}/bin/ruby)
-              if [ "X${_ruby_pkg}X" != "XX" ]; then
+              _ruby_bin=$(echo ${BREW_PREFIX}/Cellar/${_ruby_pkg}/*/bin | sort | tail -1)
+              for _ruby_bin_file in $(find ${_ruby_bin} -type f); do
+                _target="/usr/local/bin/$(basename ${_ruby_bin_file})"
+                if [ ! -L ${_target} ]; then
+                  _relink=1
+                elif [ "$(realpath ${_target})" != "${_ruby_bin_file}" ]; then
+                  _relink=1
+                fi
+              done
+              if [ "X${_relink}X" != "X0X" ]; then
                 cmd brew unlink ${_ruby_pkg}
                 cmd brew link ${_ruby_pkg}
               fi
@@ -246,6 +256,18 @@ pear_install() {
   else
     pkg php
   fi
+}
+
+# Simulate realpath(3)
+realpath() {
+  local path=$1
+  local cwd=$(pwd)
+  cd $(dirname ${path})
+  path=$(readlink ${path})
+  cd $(dirname ${path})
+  local dir=$(pwd)
+  cd ${cwd}
+  echo "${dir}/$(basename ${path})"
 }
 
 # Symlink a file from this repo.
