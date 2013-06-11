@@ -107,7 +107,7 @@ rebuild_prompt() {
 
     # Do the same for virtualenv
     virtualenv=""
-    if [[ "X${WORKON_HOME}X" != "XX" ]]; then
+    if which virtualenvwrapper.sh > /dev/null 2>&1; then
         virtualenv=$(lsvirtualenv)
         if [[ "X${virtualenv}X" != "XX" ]]; then
             virtualenv="{${virtualenv}} "
