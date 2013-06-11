@@ -22,10 +22,12 @@ cd ${cwd}
 bash_completion() {
   completion_file=$1
   completion_dir=/etc/bash_completion.d
-  if which brew > /dev/null 2>&1; then
-    completion_dir="${BREW_PREFIX}${completion_dir}"
+  if i_own_the_box; then
+    if which brew > /dev/null 2>&1; then
+      completion_dir="${BREW_PREFIX}${completion_dir}"
+    fi
+    symlink ${completion_file} ${completion_dir}/$(basename ${completion_file})
   fi
-  symlink ${completion_file} ${completion_dir}/$(basename ${completion_file})
 }
 
 bootstrap_local_lib() {
@@ -93,6 +95,10 @@ encrypt() {
   fi
 
   cmd openssl enc -aes-256-cbc -a -salt -in ${file} -out ${file}.enc -pass file:${pass_file}
+}
+
+i_own_the_box() {
+  [ ${OS} = "Darwin" ] || bytemark_box
 }
 
 # Ensure a package is installed
@@ -294,35 +300,39 @@ symlink() {
 #
 
 # First, sort out any encrypted files
-for cipherfile in $(find ${root} -type f -name '*.enc'); do
-  plainfile=$(echo ${cipherfile} | sed -e 's/\.enc$//')
+if [ -f ${HOME}/.dotfiles_password ]; then
+  for cipherfile in $(find ${root} -type f -name '*.enc'); do
+    plainfile=$(echo ${cipherfile} | sed -e 's/\.enc$//')
 
-  # Make sure the plaintext is ignored by git to prevent accidental checkins
-  gitignore=${root}/.gitignore
-  relative=$(echo ${plainfile} | sed -e "s,^${root}/*,,")
-  if [ "X$(grep ${relative} ${gitignore})X" = "XX" ]; then
-    if [ ${DRY_RUN:-unset} = "unset" ]; then
-      echo ${relative} >> ${gitignore}
-      sort ${gitignore} > ${gitignore}.tmp
-      mv ${gitignore}.tmp ${gitignore}
-    else
-      echo "[Add ${relative} to ${gitignore}]"
+    # Make sure the plaintext is ignored by git to prevent accidental checkins
+    gitignore=${root}/.gitignore
+    relative=$(echo ${plainfile} | sed -e "s,^${root}/*,,")
+    if [ "X$(grep ${relative} ${gitignore})X" = "XX" ]; then
+      if [ ${DRY_RUN:-unset} = "unset" ]; then
+        echo ${relative} >> ${gitignore}
+        sort ${gitignore} > ${gitignore}.tmp
+        mv ${gitignore}.tmp ${gitignore}
+      else
+        echo "[Add ${relative} to ${gitignore}]"
+      fi
     fi
-  fi
 
-  if [ -f ${plainfile} ]; then
-    if [ ${plainfile} -nt ${cipherfile} ]; then
-      encrypt ${plainfile}
-      cmd touch ${plainfile} ${cipherfile}
-    elif [ ${cipherfile} -nt ${plainfile} ]; then
+    if [ -f ${plainfile} ]; then
+      if [ ${plainfile} -nt ${cipherfile} ]; then
+        encrypt ${plainfile}
+        cmd touch ${plainfile} ${cipherfile}
+      elif [ ${cipherfile} -nt ${plainfile} ]; then
+        decrypt ${cipherfile}
+        cmd touch ${plainfile} ${cipherfile}
+      fi
+    else
       decrypt ${cipherfile}
       cmd touch ${plainfile} ${cipherfile}
     fi
-  else
-    decrypt ${cipherfile}
-    cmd touch ${plainfile} ${cipherfile}
-  fi
-done
+  done
+else
+  echo "Skipping encrypted files since .dotfiles_password is not available."
+fi
 
 # If X11 isn't installed, we need to prompt for XQuartz before going further.
 if [ ${OS} = "Darwin" ]; then
@@ -344,7 +354,7 @@ for file in $(find ${root}/bin -type f); do
       fi
       ;;
     (brew-*)
-      if ! bytemark_box; then
+      if which brew > /dev/null 2>&1; then
         symlink ${file} bin/$(basename ${file})
       fi
       ;;
@@ -356,13 +366,16 @@ done
 symlink modules/git-wip/git-wip bin/git-wip
 
 # Install the packages we need
-pkg bash bash-completion ctags curl gnupg git nmap vim wget
-if [ ${OS} = "Darwin" ]; then
+pkg bash bash-completion curl git vim wget
+if i_own_the_box; then
   pkg Crypt::SSLeay JSON Net::GitHub Net::Twitter WWW::Mechanize apc boto \
-    bundler common::sense go graphviz httpie hub imagick jedi local::lib \
-    mercurial mysql nginx paramiko perl php postgresql pstree pyflakes python \
-    redis requests requests-oauth ruby tornado twig vagrant virtualenv watch \
-    xdebug xhprof
+    bundler common::sense ctags gnupg go graphviz httpie hub imagick jedi \
+    local::lib mercurial mysql nginx nmap paramiko perl php postgresql pstree \
+    pyflakes python redis requests requests-oauth ruby tornado twig vagrant \
+    virtualenv watch xdebug xhprof
+fi
+if [ ${OS} = "Darwin" ]; then
+  pkg vagrant
 fi
 if bytemark_box; then
   pkg mutt
