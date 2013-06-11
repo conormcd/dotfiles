@@ -41,6 +41,21 @@ if [[ -f /usr/local/share/bash-completion/bash_completion ]]; then
     . /usr/local/share/bash-completion/bash_completion
 fi
 
+# Python bits
+PYTHON_BINDIR=/usr/local/share/python
+if [ -d $PYTHON_BINDIR ]; then
+    PATH=$PATH:$PYTHON_BINDIR
+fi
+if which virtualenv > /dev/null 2>&1; then
+    export WORKON_HOME=~/.virtualenvs
+    export PIP_RESPECT_VIRTUALENV=true
+    export PIP_VIRTUALENV_BASE=$WORKON_HOME
+    mkdir -p $WORKON_HOME
+    if [ -f $PYTHON_BINDIR/virtualenvwrapper.sh ]; then
+        . $PYTHON_BINDIR/virtualenvwrapper.sh
+    fi
+fi
+
 # Make a large history and share it between all sessions *and* with tcsh
 shopt -s histappend
 HISTFILE="${HOME}/.history"
@@ -90,7 +105,16 @@ rebuild_prompt() {
         branch="${branch} "
     fi
 
-    PS1="${host_color}\A [${branch}\W]>${reset} "
+    # Do the same for virtualenv
+    virtualenv=""
+    if [[ "X${WORKON_HOME}X" != "XX" ]]; then
+        virtualenv=$(lsvirtualenv)
+        if [[ "X${virtualenv}X" != "XX" ]]; then
+            virtualenv="{${virtualenv}} "
+        fi
+    fi
+
+    PS1="${host_color}\A [${virtualenv}${branch}\W]>${reset} "
 }
 
 # Git aliases
