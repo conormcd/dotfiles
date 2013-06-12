@@ -398,6 +398,7 @@ symlink .mailmap
 if bytemark_box; then symlink .muttrc; fi
 symlink .tcsh
 symlink .tcshrc
+symlink .tmux.conf
 symlink .vim
 symlink .vimrc
 
