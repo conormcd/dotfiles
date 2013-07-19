@@ -42,11 +42,6 @@ if [[ -f /usr/local/share/bash-completion/bash_completion ]]; then
 fi
 
 # Python bits
-for python_bindir in /usr/local/share/python ${HOME}/.local/bin; do
-    if [ -d ${python_bindir} ]; then
-        PATH=$PATH:$python_bindir
-    fi
-done
 if which virtualenv > /dev/null 2>&1; then
     export WORKON_HOME=~/.virtualenvs
     export PIP_RESPECT_VIRTUALENV=true
