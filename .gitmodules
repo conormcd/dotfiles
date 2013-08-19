@@ -34,9 +34,6 @@
 [submodule "modules/vagrant-bash-completion"]
 	path = modules/vagrant-bash-completion
 	url = git://github.com/conormcd/vagrant-bash-completion.git
-[submodule ".vim/bundle/supertab"]
-	path = .vim/bundle/supertab
-	url = git://github.com/ervandew/supertab.git
 [submodule "modules/completion-ruby"]
 	path = modules/completion-ruby
 	url = git://github.com/mernen/completion-ruby.git
