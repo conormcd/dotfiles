@@ -61,24 +61,18 @@ autocmd BufReadPost *
   \   exe "normal g`\"" |
   \ endif
 
-" Omnifunc tweaks
-autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
-
 " Powerline customization
 let g:Powerline_symbols = 'fancy'
 call Pl#Theme#RemoveSegment('fileformat')
 call Pl#Theme#RemoveSegment('fileencoding')
 call Pl#Theme#RemoveSegment('filetype')
 
-" Snipmate snippets
-let g:snippets_dir = '~/.vim/snippets'
-
-" Supertab
-autocmd FileType c,html,javascript,php,python,ruby,sql,xml let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
-
 " Syntastic tweaks
 let g:syntastic_phpcs_disable = 1
 let g:syntastic_c_compiler_options = ' -std=c99'
+
+" YouCompleteMe tweaks
+let g:ycm_autoclose_preview_window_after_completion=1
 
 " Turn on spell checking
 setlocal spell spelllang=en_gb
