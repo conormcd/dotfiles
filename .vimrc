@@ -1,5 +1,11 @@
 set nocompatible				" Make Vim not act like vi
 
+" Just disable YouCompleteMe if there isn't a modern enough vim to handle it.
+" We don't really care for a warning on every startup.
+if v:version < 703 || (v:version == 703 && !has('patch584'))
+	let g:loaded_youcompleteme = 1
+endif
+
 call pathogen#infect()			" Load all the things in .vimrc/bundle
 call pathogen#helptags()		" Generate all the docs
 filetype plugin indent on		" Use the filetype detection magic
