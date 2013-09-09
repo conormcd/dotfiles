@@ -74,8 +74,8 @@ call Pl#Theme#RemoveSegment('fileencoding')
 call Pl#Theme#RemoveSegment('filetype')
 
 " Syntastic tweaks
-let g:syntastic_phpcs_disable = 1
 let g:syntastic_c_compiler_options = ' -std=c99'
+let g:syntastic_php_phpcs_args = '--report=csv --standard=/Users/conor/.phpcs/phpcs.xml'
 
 " YouCompleteMe tweaks
 let g:ycm_autoclose_preview_window_after_completion=1
