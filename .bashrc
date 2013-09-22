@@ -157,3 +157,7 @@ if [[ $OSTYPE =~ "darwin" ]]; then
 elif [[ $OSTYPE =~ "linux" ]]; then
     alias ls='ls --color=auto --human-readable'
 fi
+
+if [ -f ~/.travis/travis.sh ]; then
+    . ~/.travis/travis.sh
+fi
