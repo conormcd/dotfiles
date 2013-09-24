@@ -82,7 +82,7 @@ let g:ycm_autoclose_preview_window_after_completion=1
 
 " Turn on spell checking
 setlocal spell spelllang=en_gb
-autocmd FileType diff,gitconfig,gitrebase,procmail setlocal nospell
+autocmd FileType diff,gitconfig,gitrebase,procmail,yaml setlocal nospell
 function! ToggleSpelling()
 	if &spell
 		set nospell
