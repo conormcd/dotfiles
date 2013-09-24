@@ -137,7 +137,7 @@ pkg() {
           (ruby)
             package_name=ruby193
             ;;
-          (bundler|twig|vagrant)
+          (bundler|twig)
             installer="gem"
             ;;
           (apc|xdebug|xhprof)
@@ -334,11 +334,17 @@ else
   echo "Skipping encrypted files since .dotfiles_password is not available."
 fi
 
-# If X11 isn't installed, we need to prompt for XQuartz before going further.
 if [ ${OS} = "Darwin" ]; then
+  # If X11 isn't installed, we need to prompt for XQuartz before going further.
   if [ ! -d /opt/X11 ]; then
     echo "Install XQuartz before going any further."
     echo "http://xquartz.macosforge.org/"
+    exit 1
+  fi
+
+  # Vagrant is now a manual install
+  if ! which vagrant > /dev/null 2>&1; then
+    echo "Install Vagrant manually."
     exit 1
   fi
 fi
@@ -371,11 +377,8 @@ if i_own_the_box; then
   pkg Crypt::SSLeay JSON Net::GitHub Net::Twitter WWW::Mechanize apc boto \
     bundler common::sense ctags gnupg go graphviz httpie hub imagick jedi \
     local::lib mercurial mysql nginx nmap paramiko perl php postgresql pstree \
-    pyflakes python redis requests requests-oauth ruby tornado twig vagrant \
+    pyflakes python redis requests requests-oauth ruby tornado twig \
     virtualenv watch xdebug xhprof
-fi
-if [ ${OS} = "Darwin" ]; then
-  pkg vagrant
 fi
 if bytemark_box; then
   pkg mutt
