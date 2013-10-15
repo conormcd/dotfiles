@@ -222,8 +222,35 @@ pkg() {
       (Linux)
         if [ -f /etc/debian_version ]; then
           case ${package_name} in
+            (Crypt::SSLeay)
+              package_name="libcrypt-ssleay-perl"
+              ;;
+            (JSON)
+              package_name="libjson-perl"
+              ;;
+            (apc)
+              package_name="php-apc"
+              ;;
             (ctags)
               package_name="exuberant-ctags"
+              ;;
+            (go)
+              package_name="golang"
+              ;;
+            (mysql)
+              package_name="mysql-server-5.0"
+              ;;
+            (php)
+              package_name="php5"
+              ;;
+            (pstree)
+              package_name="psmisc"
+              ;;
+            (watch)
+              package_name="procps"
+              ;;
+            (xdebug|xhprof)
+              package_name="php5-${package_name}"
               ;;
           esac
           if ! dpkg -s ${package_name} > /dev/null 2>&1; then
@@ -374,11 +401,14 @@ symlink modules/git-wip/git-wip bin/git-wip
 # Install the packages we need
 pkg bash bash-completion curl git vim wget
 if i_own_the_box; then
-  pkg Crypt::SSLeay JSON Net::GitHub Net::Twitter WWW::Mechanize apc boto \
-    bundler common::sense ctags gnupg go graphviz httpie hub imagick jedi \
-    local::lib mercurial mysql nginx nmap paramiko perl php postgresql pstree \
-    pyflakes python redis requests requests-oauth ruby tornado twig \
-    virtualenv watch xdebug xhprof
+  pkg apc ctags gnupg go graphviz mercurial mysql nmap perl php pstree python \
+    ruby watch xdebug xhprof
+  if ! bytemark_box; then
+    pkg Crypt::SSLeay JSON Net::GitHub Net::Twitter WWW::Mechanize boto \
+      bundler common::sense httpie hub imagick jedi local::lib nginx paramiko \
+      postgresql pyflakes redis requests requests-oauth tornado twig \
+      virtualenv
+  fi
 fi
 if bytemark_box; then
   pkg mutt
