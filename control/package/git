@@ -1,0 +1,15 @@
+# vim:ft=sh
+
+package git
+
+# Config files
+symlink .cvsignore
+if ! dry_run; then
+	sed -e s/___EMAIL___/${GIT_EMAIL}/ ${DOTFILES_ROOT}/.gitconfig.template > ${HOME}/.gitconfig
+fi
+# TODO: Mailmap
+
+# Extra git scripts
+symlink bin/git-explore
+symlink bin/git-repo-stats
+symlink modules/git-wip/git-wip bin/git-wip

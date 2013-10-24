@@ -1,0 +1,10 @@
+# vim:ft=sh
+
+if ! function_exists apt_install; then
+    apt_install() {
+        local package=$1
+        if ! dpkg -s ${package} > /dev/null 2>&1; then
+            cmd sudo aptitude install ${package}
+        fi
+    }
+fi

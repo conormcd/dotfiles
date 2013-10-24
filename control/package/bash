@@ -1,0 +1,30 @@
+# vim:ft=sh
+
+# Create a function to allow other packages bring in bash completions
+if ! function_exists bash_completion; then
+	bash_completion() {
+		completion_file=$1
+		for dir in /etc/bash_completion.d /usr/local/etc/bash_completion.d; do
+			if [ -d ${dir} ]; then
+				symlink ${completion_file} ${dir}/$(basename ${completion_file})
+			fi
+		done
+	}
+fi
+
+# Make sure the bash and bash completion packages are installed
+package bash
+case $(os) in
+	(OSX)
+		package bash-completion2 /usr/local/Cellar/bash-completion2
+		bash_completion /usr/local/Library/Contributions/brew_bash_completion.sh
+		;;
+	(*)
+		package bash-completion
+		;;
+esac
+
+# Now symlink in the config files
+symlink .bash_login
+symlink .bashrc
+symlink .inputrc

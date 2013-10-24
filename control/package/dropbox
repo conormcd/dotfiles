@@ -1,0 +1,3 @@
+# vim:ft=sh
+
+package dropbox '/Applications/Dropbox.app'

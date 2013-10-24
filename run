@@ -1,0 +1,65 @@
+#!/bin/sh
+
+set -o errexit
+set -o nounset
+
+cd $(dirname $0)
+export DOTFILES_ROOT=$(pwd)
+cd control
+
+# Pull in the common functions
+. lib/common
+
+# Cache some frequently-needed values
+export OS=$(os)
+
+# Make sure this repo is up to date
+if [ $(file_age ../.git/FETCH_HEAD) -gt 3600 ]; then
+	cd ..
+    cmd git pull
+    cmd git submodule foreach git pull
+	cd control
+fi
+
+# Sort out the encrypted files
+for cipherfile in $(find ${DOTFILES_ROOT} -type f -name '*.enc'); do
+	plainfile=$(echo ${cipherfile} | sed -e 's/\.enc$//')
+
+	# Try to keep the plaintext out of the repo.
+	gitignore ${plainfile}
+
+	if [ -f ${plainfile} ]; then
+		if [ ${plainfile} -nt ${cipherfile} ]; then
+			encrypt ${plainfile}
+			cmd touch ${plainfile} ${cipherfile}
+		elif [ ${cipherfile} -nt ${plainfile} ]; then
+			decrypt ${cipherfile}
+			cmd touch ${plainfile} ${cipherfile}
+		fi
+	else
+		decrypt ${cipherfile}
+		cmd touch ${plainfile} ${cipherfile}
+	fi
+done
+
+# Figure out which machine this is and include the config for that machine.
+case $(hostname) in
+	(mcdermottr.vm.bytemark.co.uk)
+		# Personal laptop
+		export GIT_EMAIL="conor@mcdermottroe.com"
+		. machine/bytemark-box
+		;;
+	(erbium.local)
+		# Personal laptop
+		export GIT_EMAIL="conor@mcdermottroe.com"
+		. machine/osx-personal
+		;;
+	(Conors-MacBook-Air.local)
+		# Work laptop
+		export GIT_EMAIL="cmcdermottroe@engineyard.com"
+		. machine/osx-work
+		;;
+	(*)
+		abort "Unknown machine."
+		;;
+esac

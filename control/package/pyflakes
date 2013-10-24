@@ -1,0 +1,12 @@
+# vim:ft=sh
+
+. package/python
+
+case $(os) in
+	(Debian)
+		package pyflakes
+		;;
+	(OSX)
+		pip_install pyflakes
+		;;
+esac

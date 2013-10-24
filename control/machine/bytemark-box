@@ -1,0 +1,8 @@
+# vim:ft=sh
+. machine/common
+
+. package/mutt
+
+symlink bin/ipsort
+symlink bin/mailtail
+symlink bin/mark_as_read

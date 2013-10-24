@@ -1,0 +1,22 @@
+# vim:ft=sh
+
+case $(os) in
+	(Debian)
+		package vim-nox
+		;;
+	(*)
+		package vim
+		;;
+esac
+symlink .vim
+symlink .vimrc
+
+# Set up the .vim directory
+mkdir_p ~/.vim/spell
+
+# syntastic uses pyflakes
+. package/pyflakes
+
+# YouCompleteMe leans on ctags and jedi
+. package/ctags
+. package/jedi

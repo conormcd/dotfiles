@@ -1,0 +1,147 @@
+# vim:ft=sh
+abort() {
+    echo $*
+    exit 1
+}
+
+cmd() {
+    echo $*
+    if ! dry_run; then
+        $*
+    fi
+}
+
+cmd_exists() {
+    if which $* > /dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+decrypt() {
+    file=$1
+    pass_file=${HOME}/.dotfiles_password
+
+    cmd_exists openssl || abort "Can't encrypt or decrypt without openssl"
+    [ -f ${pass_file} ] || abort "Can't encrypt or decrypt without ${pass_file}"
+    if [ -z "$(echo ${file} | grep '\.enc$')" ]; then
+        abort "Refusing to decrypt a file unless it ends in .enc"
+    fi
+    file=$(echo ${file} | sed -e 's/\.enc$//')
+
+    cmd openssl enc -d -aes-256-cbc -a -salt -in ${file}.enc -out ${file} -pass file:${pass_file}
+}
+
+encrypt() {
+    local file=$1
+    local pass_file=${HOME}/.dotfiles_password
+
+    cmd_exists openssl || abort "Can't encrypt or decrypt without openssl"
+    [ -f ${pass_file} ] || abort "Can't encrypt or decrypt without ${pass_file}"
+
+    cmd openssl enc -aes-256-cbc -a -salt -in ${file} -out ${file}.enc -pass file:${pass_file}
+}
+
+dry_run() {
+    [ ${DRY_RUN:-unset} != "unset" ]
+}
+
+file_age() {
+    _file=$1
+
+    _mtime=0
+    case $(os) in
+        (OSX)
+            _mtime=$(stat -f %m ${_file})
+            ;;
+        (*)
+            _mtime=$(stat -c %Y ${_file})
+            ;;
+    esac
+
+    # Get the current time
+    _curtime=$(date +%s)
+    echo $((${_curtime} - ${_mtime}))
+}
+
+function_exists() {
+    if type $* > /dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+gitignore() {
+    file=$1
+    ignore_file=${DOTFILES_ROOT}/.gitignore
+    relative_file=$(echo ${file} | sed -e "s,^${DOTFILES_ROOT}/*,,")
+    if [ -z "$(grep ${relative_file} ${ignore_file})" ]; then
+        if ! dry_run; then
+            echo ${relative_file} >> ${ignore_file}
+            sort ${ignore_file} > ${ignore_file}.tmp
+            mv ${ignore_file}.tmp ${ignore_file}
+        else
+            echo "Add ${relative_file} to .gitignore"
+        fi
+    fi
+}
+
+mkdir_p() {
+    if [ ! -d $1 ]; then
+        cmd mkdir -p $1
+    fi
+}
+
+os() {
+    if [ ${OS:-unset} = "unset" ]; then
+        OS=$(uname -s)
+        if [ ${OS} = "Darwin" ]; then
+            OS=OSX
+        elif [ ${OS} = "Linux" -a -f /etc/debian_version ]; then
+            OS=Debian
+        fi
+    fi
+    echo ${OS}
+}
+
+package() {
+    case $(os) in
+        (Debian)
+            . package/apt
+            apt_install $*
+            ;;
+        (OSX)
+            . package/homebrew
+            brew_install "$@"
+            ;;
+        (*)
+            abort "Unsupported OS: ${OS}"
+            ;;
+    esac
+}
+
+symlink() {
+    file=$1
+    if [ $# -gt 1 ]; then
+        target=$2
+        if [ "$(echo ${target} | grep ^/)" != "${target}" ]; then
+            target=${HOME}/${target}
+        fi
+    else
+        target=${HOME}/${file}
+    fi
+    if [ "$(echo ${file} | grep ^/)" != "${file}" ]; then
+        file="${DOTFILES_ROOT}/${file}"
+    fi
+    if [ ! -L ${target} ] || [ $(readlink ${target}) != ${file} ]; then
+        cmd ln -fns ${file} ${target}
+    fi
+}
+
+warn() {
+    if [ ${WARNINGS:-off} != "off" ]; then
+        echo "WARN: $*" 1>&2
+    fi
+}

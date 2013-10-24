@@ -25,6 +25,7 @@ done
 export BLOCKSIZE=K
 export EDITOR=vim
 HISTFILE="${HOME}/.history"
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 export LANG=en_IE.UTF-8
 export LC_COLLATE=C
 export PERL_LOCAL_LIB_ROOT="$HOME/.perl5lib"

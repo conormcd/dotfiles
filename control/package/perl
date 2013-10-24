@@ -1,0 +1,38 @@
+# vim:ft=sh
+
+package perl
+
+if [ $(os) = "OSX" ]; then
+    export PERL_LOCAL_LIB=~/.perl5lib
+    if [ ! -d ${PERL_LOCAL_LIB} ]; then
+        . package/curl
+        . package/make
+
+        tmpdir=$(mktemp -d -t local_lib_bootstrapXXXXXX)
+        cwd=$(pwd)
+        cd ${tmpdir}
+
+        cmd curl -Lso local-lib.tar.gz http://search.cpan.org/CPAN/authors/id/A/AP/APEIRON/local-lib-1.008009.tar.gz
+        cmd tar xf local-lib.tar.gz
+        if ! dry_run; then
+            cd local-lib*
+        fi
+        cmd perl Makefile.PL --bootstrap=${PERL_LOCAL_LIB}
+        cmd make test
+        cmd make install
+
+        cd ${cwd}
+        rm -rf ${tmpdir}
+    fi
+fi
+
+if ! function_exists cpan_install; then
+    cpan_install() {
+        package=$1
+        if ! perl -M${package} -e '' > /dev/null 2>&1; then
+            cmd cpan install ${package}
+        fi
+    }
+fi
+
+cpan_install common::sense

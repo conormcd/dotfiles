@@ -1,0 +1,10 @@
+# vim:ft=sh
+
+case $(os) in
+    (Debian)
+        package mysql-server-5.0
+        ;;
+    (OSX)
+        package mysql
+        ;;
+esac
