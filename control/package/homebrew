@@ -13,7 +13,7 @@ if [ "$(os)" = "OSX" ]; then
             cmd brew update
         fi
     fi
-    symlink bin/brew-which-package.rb
+    binfile bin/brew-which-package.rb
 
     if ! brew cask 2>&1 > /dev/null; then
         cmd brew tap phinze/homebrew-cask

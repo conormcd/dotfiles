@@ -3,6 +3,6 @@
 
 . package/mutt
 
-symlink bin/ipsort
-symlink bin/mailtail
-symlink bin/mark_as_read
+binfile bin/ipsort
+binfile bin/mailtail
+binfile bin/mark_as_read

@@ -20,8 +20,8 @@ cmd_exists() {
 }
 
 decrypt() {
-    file=$1
-    pass_file=${HOME}/.dotfiles_password
+    local file=$1
+    local pass_file=${HOME}/.dotfiles_password
 
     cmd_exists openssl || abort "Can't encrypt or decrypt without openssl"
     [ -f ${pass_file} ] || abort "Can't encrypt or decrypt without ${pass_file}"
@@ -41,6 +41,42 @@ encrypt() {
     [ -f ${pass_file} ] || abort "Can't encrypt or decrypt without ${pass_file}"
 
     cmd openssl enc -aes-256-cbc -a -salt -in ${file} -out ${file}.enc -pass file:${pass_file}
+}
+
+copyfile() {
+    local src=$1
+    local dst=$2
+
+    [ -e ${src} ] || abort "${src} does not exist."
+    if [ -e ${dst} ]; then
+        if diff -q ${src} ${dst} 2>&1 > /dev/null; then
+            # Files are the same, just make sure the destination isn't a
+            # symlink. If not, leave it alone.
+            if [ -L ${dst} ]; then
+                cmd rm ${dst}
+                cmd cp ${src} ${dst}
+            fi
+        elif dry_run; then
+            echo "Will apply the following diff to ${dst}:"
+            diff -ruN ${dst} ${src}
+        else
+            cmd cp ${src} ${dst}
+        fi
+    else
+        cmd cp ${src} ${dst}
+    fi
+}
+
+binfile() {
+    local path=$1
+
+    copyfile ${DOTFILES_ROOT}/${path} ${HOME}/bin/$(basename ${path})
+}
+
+dotfile() {
+    local path=$1
+
+    copyfile ${DOTFILES_ROOT}/${path} ${HOME}/${path}
 }
 
 dry_run() {

@@ -41,6 +41,11 @@ fi
 if [[ -f /usr/local/share/bash-completion/bash_completion ]]; then
     . /usr/local/share/bash-completion/bash_completion
 fi
+if [[ -d ~/.bash/completion ]]; then
+    for cmpl in $(find ~/.bash/completion -type f); do
+        . ${cmpl}
+    done
+fi
 
 # Python bits
 if which virtualenv > /dev/null 2>&1; then

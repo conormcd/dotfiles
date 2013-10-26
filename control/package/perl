@@ -9,19 +9,17 @@ if [ $(os) = "OSX" ]; then
         . package/make
 
         tmpdir=$(mktemp -d -t local_lib_bootstrapXXXXXX)
-        cwd=$(pwd)
-        cd ${tmpdir}
-
-        cmd curl -Lso local-lib.tar.gz http://search.cpan.org/CPAN/authors/id/A/AP/APEIRON/local-lib-1.008009.tar.gz
-        cmd tar xf local-lib.tar.gz
-        if ! dry_run; then
-            cd local-lib*
-        fi
-        cmd perl Makefile.PL --bootstrap=${PERL_LOCAL_LIB}
-        cmd make test
-        cmd make install
-
-        cd ${cwd}
+        (
+            cd ${tmpdir}
+            cmd curl -Lso local-lib.tar.gz http://search.cpan.org/CPAN/authors/id/A/AP/APEIRON/local-lib-1.008009.tar.gz
+            cmd tar xf local-lib.tar.gz
+            if ! dry_run; then
+                cd local-lib*
+            fi
+            cmd perl Makefile.PL --bootstrap=${PERL_LOCAL_LIB}
+            cmd make test
+            cmd make install
+        )
         rm -rf ${tmpdir}
     fi
 fi

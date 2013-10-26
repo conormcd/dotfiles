@@ -4,11 +4,18 @@
 if ! function_exists bash_completion; then
 	bash_completion() {
 		completion_file=$1
-		for dir in /etc/bash_completion.d /usr/local/etc/bash_completion.d; do
-			if [ -d ${dir} ]; then
-				symlink ${completion_file} ${dir}/$(basename ${completion_file})
-			fi
-		done
+
+		completion_dir=${HOME}/.bash/completion
+		mkdir_p ${completion_dir}
+		symlink ${completion_file} ${completion_dir}/$(basename ${completion_file})
+	}
+
+	bash_completion_package() {
+		repo=$1
+
+		completion_pkg_dir=${HOME}/.bash/completion-packages
+		mkdir_p ${completion_pkg_dir}
+		git_repo ${repo} ${completion_pkg_dir} master 86400
 	}
 fi
 
@@ -24,7 +31,6 @@ case $(os) in
 		;;
 esac
 
-# Now symlink in the config files
-symlink .bash_login
-symlink .bashrc
-symlink .inputrc
+dotfile .bash_login
+dotfile .bashrc
+dotfile .inputrc

@@ -13,14 +13,6 @@ cd control
 # Cache some frequently-needed values
 export OS=$(os)
 
-# Make sure this repo is up to date
-if [ $(file_age ../.git/FETCH_HEAD) -gt 3600 ]; then
-	cd ..
-    cmd git pull
-    cmd git submodule foreach git pull
-	cd control
-fi
-
 # Sort out the encrypted files
 for cipherfile in $(find ${DOTFILES_ROOT} -type f -name '*.enc'); do
 	plainfile=$(echo ${cipherfile} | sed -e 's/\.enc$//')

@@ -1,4 +1,4 @@
 # vim:ft=sh
 
 package tmux
-symlink .tmux.conf
+dotfile .tmux.conf

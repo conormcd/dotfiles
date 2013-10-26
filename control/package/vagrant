@@ -10,7 +10,7 @@ if ! cmd_exists vagrant; then
     cmd vagrant plugin install vagrant-omnibus
 fi
 
-symlink bin/vm
+binfile bin/vm
 
-. package/bash
-bash_completion modules/vagrant-bash-completion/vagrant
+brew_tap homebrew/completions
+brew_install vagrant-completion

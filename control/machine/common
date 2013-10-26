@@ -9,6 +9,7 @@
 . package/pstree
 . package/python
 . package/ruby
+. package/tmux
 . package/vim
 . package/watch
 . package/wget

@@ -1,4 +1,4 @@
 # vim:ft=sh
 
 package mutt
-symlink .muttrc
+dotfile .muttrc
