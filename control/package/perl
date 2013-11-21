@@ -1,11 +1,12 @@
 # vim:ft=sh
 
-package perl
+if [ $(os) != "OSX" ]; then
+    package perl
+fi
 
 if [ $(os) = "OSX" ]; then
     export PERL_LOCAL_LIB=~/.perl5lib
     if [ ! -d ${PERL_LOCAL_LIB} ]; then
-        . package/curl
         . package/make
 
         tmpdir=$(mktemp -d -t local_lib_bootstrapXXXXXX)
