@@ -7,7 +7,7 @@ dotfile .cvsignore
 if ! dry_run; then
 	sed -e s/___EMAIL___/${GIT_EMAIL}/ ${DOTFILES_ROOT}/.gitconfig.template > ${HOME}/.gitconfig
 fi
-dotfile .mailmap
+dotfile_encrypted .mailmap
 
 # Extra git scripts
 binfile bin/git-explore

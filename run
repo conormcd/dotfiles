@@ -13,27 +13,6 @@ cd control
 # Cache some frequently-needed values
 export OS=$(os)
 
-# Sort out the encrypted files
-for cipherfile in $(find ${DOTFILES_ROOT} -type f -name '*.enc'); do
-	plainfile=$(echo ${cipherfile} | sed -e 's/\.enc$//')
-
-	# Try to keep the plaintext out of the repo.
-	gitignore ${plainfile}
-
-	if [ -f ${plainfile} ]; then
-		if [ ${plainfile} -nt ${cipherfile} ]; then
-			encrypt ${plainfile}
-			cmd touch ${plainfile} ${cipherfile}
-		elif [ ${cipherfile} -nt ${plainfile} ]; then
-			decrypt ${cipherfile}
-			cmd touch ${plainfile} ${cipherfile}
-		fi
-	else
-		decrypt ${cipherfile}
-		cmd touch ${plainfile} ${cipherfile}
-	fi
-done
-
 # Figure out which machine this is and include the config for that machine.
 case $(hostname) in
 	(mcdermottr.vm.bytemark.co.uk)
