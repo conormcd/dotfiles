@@ -1,20 +1,13 @@
 # vim:ft=sh
 
-case $(os) in
-    (OSX)
-        package ruby193 ruby
-        ;;
-    (*)
-        package ruby
-        ;;
-esac
+package ruby
 
 if ! function_exists gem_install; then
     gem_install() {
         cmd gem install $*
         if [ $(os) = "OSX" ]; then
-            cmd brew unlink ruby193
-            cmd brew link ruby193
+            cmd brew unlink ruby
+            cmd brew link ruby
         fi
     }
 fi
