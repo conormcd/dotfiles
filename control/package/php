@@ -5,6 +5,9 @@ if ! function_exists pear_channel; then
         channel=$1
         if which pear > /dev/null 2>&1; then
             if ! pear channel-info ${channel} > /dev/null 2>&1; then
+                if [ -e /usr/local/lib/php/.lock ]; then
+                    cmd rm -f /usr/local/lib/php/.lock
+                fi
                 cmd pear channel-discover ${channel}
             fi
         elif dry_run; then
@@ -20,6 +23,9 @@ if ! function_exists pear_install; then
         package_source=${2:-${package_name}}
         if which pear > /dev/null 2>&1; then
             if [ -z "$(pear list -a | grep ^${package_name}\ )" ]; then
+                if [ -e /usr/local/lib/php/.lock ]; then
+                    cmd rm -f /usr/local/lib/php/.lock
+                fi
                 cmd pear install --alldeps ${package_source}
             fi
         elif dry_run; then
