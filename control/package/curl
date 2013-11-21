@@ -1,5 +1,3 @@
 # vim:ft=sh
 
-if ! cmd_exists curl; then
-	package curl
-fi
+package curl
