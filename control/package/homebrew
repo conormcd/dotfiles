@@ -15,9 +15,44 @@ if [ "$(os)" = "OSX" ]; then
     fi
     binfile bin/brew-which-package.rb
 
-    if ! brew cask 2>&1 > /dev/null; then
+    if ! function_exists brew_outdated; then
+        brew_outdated() {
+            local package=$1
+
+            local call_brew_outdated=0
+            local formula="/usr/local/Library/Formula/${package}.rb"
+            local cellar="/usr/local/Cellar/${package}"
+            if [ -e ${formula} -a -e ${cellar} ]; then
+                if [ $(file_age ${formula}) -lt $(file_age ${cellar}) ]; then
+                    call_brew_outdated=1
+                fi
+            else
+                call_brew_outdated=1
+            fi
+
+            local out_of_date=1
+            if [ ${call_brew_outdated} = "1" ]; then
+                warn "Calling brew outdated for ${package}"
+                for pkg in $(brew outdated --quiet); do
+                    if [ "${pkg}" = "${package}" ]; then
+                        out_of_date=0
+                    fi
+                done
+            fi
+
+            if [ -e ${cellar} -a ${out_of_date} -eq 1 -a ${call_brew_outdated} -eq 1 ]; then
+                cmd touch ${cellar}
+            fi
+
+            return ${out_of_date}
+        }
+    fi
+
+    if [ ! -d /usr/local/Cellar/brew-cask ]; then
         cmd brew tap phinze/homebrew-cask
         cmd brew install brew-cask
+    elif brew_outdated brew-cask; then
+        cmd brew upgrade brew-cask
     fi
 
     if ! function_exists brew_install; then
@@ -33,10 +68,16 @@ if [ "$(os)" = "OSX" ]; then
                 package_installed=0
                 if [ -e "${cmd}" ]; then
                     package_installed=1
+                elif [ -e "/usr/local/Cellar/${package}" ]; then
+                    package_installed=1
                 elif [ -n "$(command -v ${cmd} | grep ^/usr/local)" ]; then
                     package_installed=1
                 fi
-                if [ ${package_installed} -ne 1 ]; then
+                if [ ${package_installed} -eq 1 ]; then
+                    if brew_outdated ${package}; then
+                        cmd brew upgrade ${package}
+                    fi
+                else
                     warn "Forced to call brew list for ${package}"
                     if ! brew list ${package} > /dev/null 2>&1; then
                         if [ -n "$(brew search ${package} | grep ^${package}$)" ]; then
