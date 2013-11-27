@@ -2,5 +2,6 @@
 
 . machine/osx
 
+. package/apt-cacher-ng
 . package/ec2-api-tools
 . package/vagrant
