@@ -3,6 +3,10 @@
 if ! function_exists apt_install; then
     apt_install() {
         local package=$1
+        if [ $(file_age /var/lib/apt/lists) -gt 3600 ]; then
+            cmd sudo aptitude update
+            cmd sudo aptitude safe-upgrade
+        fi
         if ! dpkg -s ${package} > /dev/null 2>&1; then
             cmd sudo aptitude install ${package}
         fi
