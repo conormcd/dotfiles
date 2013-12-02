@@ -1,0 +1,4 @@
+# vim:ft=sh
+
+package tmux
+dotfile .tmux.conf

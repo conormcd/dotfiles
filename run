@@ -1,0 +1,36 @@
+#!/bin/sh
+
+set -o errexit
+set -o nounset
+
+cd $(dirname $0)
+export DOTFILES_ROOT=$(pwd)
+cd control
+
+# Pull in the common functions
+. lib/common
+
+# Cache some frequently-needed values
+export OS=$(os)
+
+# Figure out which machine this is and include the config for that machine.
+case $(hostname) in
+	(mcdermottr.vm.bytemark.co.uk)
+		# Personal laptop
+		export GIT_EMAIL="conor@mcdermottroe.com"
+		. machine/bytemark-box
+		;;
+	(erbium.local)
+		# Personal laptop
+		export GIT_EMAIL="conor@mcdermottroe.com"
+		. machine/osx-personal
+		;;
+	(Conors-MacBook-Air.local)
+		# Work laptop
+		export GIT_EMAIL="cmcdermottroe@engineyard.com"
+		. machine/osx-work
+		;;
+	(*)
+		abort "Unknown machine."
+		;;
+esac

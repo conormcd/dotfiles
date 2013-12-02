@@ -1,0 +1,7 @@
+# vim:ft=sh
+
+if [ $(os) = "Debian" ]; then
+	package psmisc
+else
+	package pstree
+fi

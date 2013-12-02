@@ -1,0 +1,16 @@
+# vim:ft=sh
+if ! cmd_exists VBoxManage; then
+    brew_cask_install virtualbox
+fi
+if ! cmd_exists vagrant; then
+    brew_cask_install vagrant
+    cmd vagrant plugin install vagrant-aws
+    cmd vagrant plugin install vagrant-berkshelf
+    cmd vagrant plugin install vagrant-cachier
+    cmd vagrant plugin install vagrant-omnibus
+fi
+
+binfile bin/vm
+
+brew_tap homebrew/completions
+brew_install vagrant-completion

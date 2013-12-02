@@ -1,0 +1,3 @@
+# vim:ft=sh
+
+package iterm2 '/Applications/iTerm.app'

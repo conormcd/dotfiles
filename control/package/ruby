@@ -1,0 +1,28 @@
+# vim:ft=sh
+
+package ruby
+
+if ! function_exists gem_install; then
+    gem_install() {
+        cmd gem install $*
+        if [ $(os) = "OSX" ]; then
+            cmd brew unlink ruby
+            cmd brew link ruby
+        fi
+    }
+fi
+
+if ! cmd_exists bundle; then
+    if [ $(os) = "Debian" ]; then
+        package bundler
+    else
+        gem_install bundler
+    fi
+fi
+
+# Make sure the Ruby bash completions are installed
+. package/bash
+bash_completion_package git://github.com/mernen/completion-ruby.git
+for cmd in bundle gem jruby rails rake ruby; do
+    bash_completion ~/.bash/completion-packages/completion-ruby/completion-${cmd}
+done

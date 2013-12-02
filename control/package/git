@@ -1,0 +1,42 @@
+# vim:ft=sh
+
+package git
+
+# Config files
+dotfile .cvsignore
+if ! dry_run; then
+	sed -e s/___EMAIL___/${GIT_EMAIL}/ ${DOTFILES_ROOT}/.gitconfig.template > ${HOME}/.gitconfig
+fi
+dotfile_encrypted .mailmap
+
+# Extra git scripts
+binfile bin/git-explore
+binfile bin/git-repo-stats
+
+if ! function_exists git_repo; then
+	git_repo() {
+		local repo=$1
+		local dir=$2
+		local branch=${3:-master}
+		local ttl=${4:-3600}
+
+		local repo_name=$(echo ${repo} | sed -e s,^.*/,, -e s,.git$,,)
+		local repo_dir=${dir}/${repo_name}
+
+		if [ -d ${repo_dir} ]; then
+			local fetch_head="${repo_dir}/.git/FETCH_HEAD"
+			if [ ! -e ${fetch_head} ]; then
+				(cd ${repo_dir} && cmd git pull origin ${branch})
+			elif [ $(file_age ${fetch_head}) -gt ${ttl} ]; then
+				(cd ${repo_dir} && cmd git pull origin ${branch})
+			fi
+		else
+			cmd git clone --recursive ${repo} ${repo_dir}
+			if dry_run; then
+				echo git checkout ${branch}
+			else
+				(cd ${repo_dir} && cmd git checkout ${branch})
+			fi
+		fi
+	}
+fi

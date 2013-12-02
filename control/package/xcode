@@ -1,0 +1,4 @@
+# vim:ft=sh
+if ! cmd_exists xcrun; then
+    abort "XCode command line tools are not installed."
+fi

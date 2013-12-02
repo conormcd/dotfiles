@@ -1,0 +1,36 @@
+# vim:ft=sh
+
+# Create a function to allow other packages bring in bash completions
+if ! function_exists bash_completion; then
+	bash_completion() {
+		completion_file=$1
+
+		completion_dir=${HOME}/.bash/completion
+		mkdir_p ${completion_dir}
+		symlink ${completion_file} ${completion_dir}/$(basename ${completion_file})
+	}
+
+	bash_completion_package() {
+		repo=$1
+
+		completion_pkg_dir=${HOME}/.bash/completion-packages
+		mkdir_p ${completion_pkg_dir}
+		git_repo ${repo} ${completion_pkg_dir} master 86400
+	}
+fi
+
+# Make sure the bash and bash completion packages are installed
+package bash
+case $(os) in
+	(OSX)
+		package bash-completion2 /usr/local/Cellar/bash-completion2
+		bash_completion /usr/local/Library/Contributions/brew_bash_completion.sh
+		;;
+	(*)
+		package bash-completion
+		;;
+esac
+
+dotfile .bash_login
+dotfile .bashrc
+dotfile .inputrc

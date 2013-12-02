@@ -1,0 +1,62 @@
+# vim:ft=sh
+
+case $(os) in
+    (Debian)
+        package vim-nox
+        ;;
+    (*)
+        package vim
+        ;;
+esac
+dotfile .vimrc
+
+if ! function_exists vim_plugin; then
+    vim_plugin() {
+        local repo=$1
+        local branch=${2:-master}
+
+        mkdir_p ~/.vim/bundle
+        git_repo ${repo} ~/.vim/bundle ${branch}
+    }
+
+    vim_plugin_github() {
+        local gh_path=$1
+        local branch=${2:-master}
+
+        vim_plugin git://github.com/${gh_path}.git ${branch}
+    }
+fi
+
+vim_plugin_github wincent/Command-T
+vim_plugin_github Valloric/YouCompleteMe
+vim_plugin_github conormcd/matchindent.vim
+vim_plugin_github juvenn/mustache.vim
+vim_plugin_github scrooloose/syntastic
+vim_plugin_github tpope/vim-commentary
+vim_plugin_github tpope/vim-endwise
+vim_plugin_github tpope/vim-fugitive
+vim_plugin_github tpope/vim-git
+vim_plugin_github tpope/vim-markdown
+vim_plugin_github jceb/vim-orgmode
+vim_plugin_github tpope/vim-pathogen
+vim_plugin_github Lokaltog/vim-powerline develop
+
+# Enable pathogen
+if [ ! -L ~/.vim/autoload ]; then
+    (
+        cd ~/.vim
+        cmd ln -fns bundle/vim-pathogen/autoload
+    )
+fi
+
+# Add in the spellings
+mkdir_p ~/.vim/spell
+dotfile .vim/spell/en.utf-8.add
+dotfile .vim/spell/en.utf-8.add.spl
+
+# syntastic uses pyflakes
+. package/pyflakes
+
+# YouCompleteMe leans on ctags and jedi
+. package/ctags
+. package/jedi

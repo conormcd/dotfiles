@@ -1,0 +1,129 @@
+# vim:ft=sh
+if [ "$(os)" = "OSX" ]; then
+    if ! cmd_exists brew; then
+        . package/xcode
+        cmd ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
+        if ! cmd_exists brew; then
+            abort "Failed to install homebrew."
+        fi
+        cmd brew tap homebrew/dupes
+        cmd brew tap homebrew/versions
+    else
+        if [ $(file_age /usr/local/.git/FETCH_HEAD) -gt 3600 ]; then
+            cmd brew update
+        fi
+    fi
+    binfile bin/brew-which-package.rb
+
+    if ! function_exists brew_outdated; then
+        brew_outdated() {
+            local package=$1
+
+            local call_brew_outdated=0
+            local formula="/usr/local/Library/Formula/${package}.rb"
+            local cellar="/usr/local/Cellar/${package}"
+            if [ -e ${formula} -a -e ${cellar} ]; then
+                if [ $(file_age ${formula}) -lt $(file_age ${cellar}) ]; then
+                    call_brew_outdated=1
+                fi
+            else
+                call_brew_outdated=1
+            fi
+
+            local out_of_date=1
+            if [ ${call_brew_outdated} = "1" ]; then
+                warn "Calling brew outdated for ${package}"
+                for pkg in $(brew outdated --quiet); do
+                    if [ "${pkg}" = "${package}" ]; then
+                        out_of_date=0
+                    fi
+                done
+            fi
+
+            if [ -e ${cellar} -a ${out_of_date} -eq 1 -a ${call_brew_outdated} -eq 1 ]; then
+                cmd touch ${cellar}
+            fi
+
+            return ${out_of_date}
+        }
+    fi
+
+    if [ ! -d /usr/local/Cellar/brew-cask ]; then
+        cmd brew tap phinze/homebrew-cask
+        cmd brew install brew-cask
+    elif brew_outdated brew-cask; then
+        cmd brew upgrade brew-cask
+    fi
+
+    if ! function_exists brew_install; then
+        brew_install() {
+            package=$1
+            cmd=${2:-${package}}
+            if [ $# -gt 2 ]; then
+                shift; shift;
+                flags=$*
+            fi
+
+            if cmd_exists brew; then
+                package_installed=0
+                if [ -e "${cmd}" ]; then
+                    package_installed=1
+                elif [ -e "/usr/local/Cellar/${package}" ]; then
+                    package_installed=1
+                elif [ -n "$(command -v ${cmd} | grep ^/usr/local)" ]; then
+                    package_installed=1
+                fi
+                if [ ${package_installed} -eq 1 ]; then
+                    if brew_outdated ${package}; then
+                        cmd brew upgrade ${package}
+                    fi
+                else
+                    warn "Forced to call brew list for ${package}"
+                    if ! brew list ${package} > /dev/null 2>&1; then
+                        if [ -n "$(brew search ${package} | grep ^${package}$)" ]; then
+                            cmd brew install ${package}
+                        elif [ -n "$(brew cask search ${package} | grep ^${package}$)" ]; then
+                            brew_cask_install ${package}
+                        else
+                            abort "No such package ${package}"
+                        fi
+                    fi
+                fi
+            elif dry_run; then
+                echo "brew install ${package}"
+            else
+                abort "Failed to install homebrew."
+            fi
+        }
+    fi
+    if ! function_exists brew_cask_install; then
+        brew_cask_install() {
+            package=$1
+            if ! brew cask 2>&1 > /dev/null; then
+                if [ -z "$(brew cask list | grep ${package})" ]; then
+                    cmd brew cask install ${package}
+                fi
+            elif dry_run; then
+                echo "brew cask install ${package}"
+            else
+                abort "Failed to install brew-cask"
+            fi
+        }
+    fi
+    if ! function_exists brew_tap; then
+        brew_tap() {
+            tap=$1
+            if cmd_exists brew; then
+                if [ -z "$(brew tap | grep ${tap})" ]; then
+                    cmd brew tap ${tap}
+                fi
+            elif dry_run; then
+                echo "brew tap ${tap}"
+            else
+                abort "Failed to install homebrew."
+            fi
+        }
+    fi
+else
+    abort "Homebrew is only supported on OSX"
+fi

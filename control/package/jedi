@@ -1,0 +1,12 @@
+# vim:ft=sh
+
+. package/python
+
+case $(os) in
+    (Debian)
+        package python-jedi
+        ;;
+    (*)
+        pip_install jedi
+        ;;
+esac

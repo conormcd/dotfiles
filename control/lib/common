@@ -1,0 +1,278 @@
+# vim:ft=sh
+abort() {
+    echo $*
+    exit 1
+}
+
+cmd() {
+    echo $*
+    if ! dry_run; then
+        $*
+    fi
+}
+
+cmd_exists() {
+    if which $* > /dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+decrypt() {
+    local file=$1
+    local pass_file=${HOME}/.dotfiles_password
+
+    cmd_exists openssl || abort "Can't encrypt or decrypt without openssl"
+    [ -f ${pass_file} ] || abort "Can't encrypt or decrypt without ${pass_file}"
+    if [ -z "$(echo ${file} | grep '\.enc$')" ]; then
+        abort "Refusing to decrypt a file unless it ends in .enc"
+    fi
+    file=$(echo ${file} | sed -e 's/\.enc$//')
+
+    cmd openssl enc -d -aes-256-cbc -a -salt -in ${file}.enc -out ${file} -pass file:${pass_file}
+}
+
+encrypt() {
+    local file=$1
+    local pass_file=${HOME}/.dotfiles_password
+
+    cmd_exists openssl || abort "Can't encrypt or decrypt without openssl"
+    [ -f ${pass_file} ] || abort "Can't encrypt or decrypt without ${pass_file}"
+
+    cmd openssl enc -aes-256-cbc -a -salt -in ${file} -out ${file}.enc -pass file:${pass_file}
+}
+
+copyfile() {
+    local src=$1
+    local dst=$2
+
+    [ -e ${src} ] || abort "${src} does not exist."
+    if [ -e ${dst} ]; then
+        if diff -q ${src} ${dst} 2>&1 > /dev/null; then
+            # Files are the same, just make sure the destination isn't a
+            # symlink. If not, leave it alone.
+            if [ -L ${dst} ]; then
+                cmd rm ${dst}
+                cmd cp ${src} ${dst}
+            fi
+        elif dry_run; then
+            echo "Will apply the following diff to ${dst}:"
+            diff -ruN ${dst} ${src}
+        else
+            cmd cp ${src} ${dst}
+        fi
+    else
+        cmd cp ${src} ${dst}
+    fi
+}
+
+copyfile_encrypted() {
+    local src=$1
+    local dst=$2
+
+    # In all circumstances, the source file must exist
+    if [ ! -e ${src} ]; then
+        abort "${src} does not exist."
+    fi
+
+    # Figure out which of the pair is encrypted
+    local src_is_encrypted=0
+    local dst_is_encrypted=0
+    if [ -n "$(echo ${src} | grep '\.enc$')" ]; then
+        src_is_encrypted=1
+    fi
+    if [ -n "$(echo ${dst} | grep '\.enc$')" ]; then
+        dst_is_encrypted=1
+    fi
+
+    # One of the files should be encrypted
+    if [ ${src_is_encrypted} -eq 0 -a ${dst_is_encrypted} -eq 0 ]; then
+        abort "Neither ${src} nor ${dst} appears to be encrypted."
+    fi
+
+    # If both files are encrypted then we should probably bail as well since
+    # this is probably a bug.
+    if [ ${src_is_encrypted} -eq 1 -a ${dst_is_encrypted} -eq 1 ]; then
+        abort "It looks like both ${src} and ${dst} are encrypted. This is probably a bug!"
+    fi
+
+    if [ -e ${dst} ]; then
+        tempfile=$(mktemp -t decryptXXXXXX)
+        if [ ${src_is_encrypted} -eq 1 ]; then
+            openssl_enc ${src} ${tempfile} -d
+            if ! diff -q ${tempfile} ${dst} 2>&1 > /dev/null; then
+                if dry_run; then
+                    echo "Will apply the following diff to ${dst}:"
+                    diff -ruN ${dst} ${tempfile}
+                else
+                    cmd cp ${tempfile} ${dst}
+                fi
+            fi
+        else
+            openssl_enc ${dst} ${tempfile} -d
+            if ! diff -q ${tempfile} ${dst} 2>&1 > /dev/null; then
+                if dry_run; then
+                    echo "Will apply the following diff to ${dst}:"
+                    diff -ruN ${tempfile} ${src}
+                else
+                    openssl_enc ${tempfile} ${dst}
+                fi
+            fi
+        fi
+        rm -f ${tempfile}
+    else
+        if [ ${src_is_encrypted} -eq 1 ]; then
+            cmd openssl_enc ${src} ${dst} -d
+        else
+            cmd openssl_enc ${src} ${dst}
+        fi
+    fi
+}
+
+openssl_enc() {
+    local in=$1
+    local out=$2
+    local mode=${3:-}
+    local pass_file=${HOME}/.dotfiles_password
+
+    cmd_exists openssl || abort "Can't encrypt or decrypt without openssl"
+    [ -f ${pass_file} ] || abort "Can't encrypt or decrypt without ${pass_file}"
+
+    openssl enc ${mode} \
+        -aes-256-cbc \
+        -a \
+        -salt \
+        -in ${in} \
+        -out ${out} \
+        -pass file:${pass_file}
+}
+
+binfile() {
+    local path=$1
+
+    copyfile ${DOTFILES_ROOT}/${path} ${HOME}/bin/$(basename ${path})
+}
+
+dotfile() {
+    local path=$1
+
+    copyfile ${DOTFILES_ROOT}/${path} ${HOME}/${path}
+}
+
+dotfile_encrypted() {
+    local path=$1
+
+    encrypted=${DOTFILES_ROOT}/${path}.enc
+    plaintext=${HOME}/${path}
+    if [ ${encrypted} -nt ${plaintext} ]; then
+        copyfile_encrypted ${encrypted} ${plaintext}
+        cmd touch ${encrypted} ${plaintext}
+    elif [ ${plaintext} -nt ${encrypted} ]; then
+        copyfile_encrypted ${plaintext} ${encrypted}
+        cmd touch ${encrypted} ${plaintext}
+    fi
+}
+
+dry_run() {
+    [ ${DRY_RUN:-unset} != "unset" ]
+}
+
+file_age() {
+    _file=$1
+
+    _mtime=0
+    case $(os) in
+        (OSX)
+            _mtime=$(stat -f %m ${_file})
+            ;;
+        (*)
+            _mtime=$(stat -c %Y ${_file})
+            ;;
+    esac
+
+    # Get the current time
+    _curtime=$(date +%s)
+    echo $((${_curtime} - ${_mtime}))
+}
+
+function_exists() {
+    if type $* > /dev/null 2>&1; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+gitignore() {
+    file=$1
+    ignore_file=${DOTFILES_ROOT}/.gitignore
+    relative_file=$(echo ${file} | sed -e "s,^${DOTFILES_ROOT}/*,,")
+    if [ -z "$(grep ${relative_file} ${ignore_file})" ]; then
+        if ! dry_run; then
+            echo ${relative_file} >> ${ignore_file}
+            sort ${ignore_file} > ${ignore_file}.tmp
+            mv ${ignore_file}.tmp ${ignore_file}
+        else
+            echo "Add ${relative_file} to .gitignore"
+        fi
+    fi
+}
+
+mkdir_p() {
+    if [ ! -d $1 ]; then
+        cmd mkdir -p $1
+    fi
+}
+
+os() {
+    if [ ${OS:-unset} = "unset" ]; then
+        OS=$(uname -s)
+        if [ ${OS} = "Darwin" ]; then
+            OS=OSX
+        elif [ ${OS} = "Linux" -a -f /etc/debian_version ]; then
+            OS=Debian
+        fi
+    fi
+    echo ${OS}
+}
+
+package() {
+    case $(os) in
+        (Debian)
+            . package/apt
+            apt_install $*
+            ;;
+        (OSX)
+            . package/homebrew
+            brew_install "$@"
+            ;;
+        (*)
+            abort "Unsupported OS: ${OS}"
+            ;;
+    esac
+}
+
+symlink() {
+    file=$1
+    if [ $# -gt 1 ]; then
+        target=$2
+        if [ "$(echo ${target} | grep ^/)" != "${target}" ]; then
+            target=${HOME}/${target}
+        fi
+    else
+        target=${HOME}/${file}
+    fi
+    if [ "$(echo ${file} | grep ^/)" != "${file}" ]; then
+        file="${DOTFILES_ROOT}/${file}"
+    fi
+    if [ ! -L ${target} ] || [ $(readlink ${target}) != ${file} ]; then
+        cmd ln -fns ${file} ${target}
+    fi
+}
+
+warn() {
+    if [ ${WARNINGS:-off} != "off" ]; then
+        echo "WARN: $*" 1>&2
+    fi
+}

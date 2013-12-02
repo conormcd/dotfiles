@@ -25,6 +25,7 @@ done
 export BLOCKSIZE=K
 export EDITOR=vim
 HISTFILE="${HOME}/.history"
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 export LANG=en_IE.UTF-8
 export LC_COLLATE=C
 export PERL_LOCAL_LIB_ROOT="$HOME/.perl5lib"
@@ -39,6 +40,11 @@ if [[ -f /etc/bash_completion ]]; then
 fi
 if [[ -f /usr/local/share/bash-completion/bash_completion ]]; then
     . /usr/local/share/bash-completion/bash_completion
+fi
+if [[ -d ~/.bash/completion ]]; then
+    for cmpl in $(find ~/.bash/completion -type f); do
+        . ${cmpl}
+    done
 fi
 
 # Python bits

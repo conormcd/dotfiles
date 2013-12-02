@@ -1,0 +1,3 @@
+# vim:ft=sh
+
+package ec2-api-tools ec2-cmd

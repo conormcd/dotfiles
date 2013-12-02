@@ -1,0 +1,10 @@
+# vim:ft=sh
+
+. machine/common
+
+. package/chrome
+. package/dropbox
+. package/hub
+. package/iterm2
+. package/mou
+. package/skype

@@ -1,0 +1,10 @@
+# vim:ft=sh
+
+case $(os) in
+    (Debian)
+        package python-virtualenv
+        ;;
+    (OSX)
+        pip_install virtualenv
+        ;;
+esac

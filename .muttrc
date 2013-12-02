@@ -2,7 +2,7 @@
 # Config commands
 #
 auto_view text/html
-mailboxes `find ~/Maildir -type d -name cur -prune | sort | perl -pe 'chomp; s/\/cur$/ /o'`
+mailboxes `find ~/Maildir -type d -name cur \! -empty -prune | sort | perl -pe 'chomp; s/\/cur$/ /o'`
 
 #
 # Macros

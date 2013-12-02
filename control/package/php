@@ -1,0 +1,67 @@
+# vim:ft=sh
+
+if ! function_exists pear_channel; then
+    pear_channel() {
+        channel=$1
+        if which pear > /dev/null 2>&1; then
+            if ! pear channel-info ${channel} > /dev/null 2>&1; then
+                if [ -e /usr/local/lib/php/.lock ]; then
+                    cmd rm -f /usr/local/lib/php/.lock
+                fi
+                cmd pear channel-discover ${channel}
+            fi
+        elif dry_run; then
+            echo "pear channel-discover ${channel}"
+        else
+            abort "Failed to install pear."
+        fi
+    }
+fi
+if ! function_exists pear_install; then
+    pear_install() {
+        package_name=$1
+        package_source=${2:-${package_name}}
+        if which pear > /dev/null 2>&1; then
+            if [ -z "$(pear list -a | grep ^${package_name}\ )" ]; then
+                if [ -e /usr/local/lib/php/.lock ]; then
+                    cmd rm -f /usr/local/lib/php/.lock
+                fi
+                cmd pear install --alldeps ${package_source}
+            fi
+        elif dry_run; then
+            echo "pear install --alldeps ${package_source}"
+        else
+            abort "Failed to install pear."
+        fi
+    }
+fi
+
+case $(os) in
+    (Debian)
+        package php5
+        package php-apc
+        ;;
+    (OSX)
+        brew_tap josegonzalez/php
+        package php54 php54 --with-mysql --with-pgsql --with-fpm
+        package php54-apc
+        package php54-imagick
+        package php54-xdebug
+        package php54-xhprof
+
+        pear_channel pear.pdepend.org
+        pear_channel pear.phpmd.org
+        pear_channel pear.phpunit.de
+        pear_channel components.ez.no
+        pear_channel pear.symfony-project.com
+        pear_channel pear.phpundercontrol.org
+        pear_channel pear.symfony.com
+        pear_channel pear.netpirates.net
+
+        pear_install PHP_PMD phpmd/PHP_PMD
+        pear_install phpcpd phpunit/phpcpd
+        pear_install PHP_CodeSniffer
+        pear_install PHP_CodeBrowser phpunit/PHP_CodeBrowser
+        pear_install PHPUnit phpunit/PHPUnit
+        ;;
+esac
