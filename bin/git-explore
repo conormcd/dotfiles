@@ -132,6 +132,61 @@ class GitExplore
     output_table(output)
   end
 
+  def average_age
+    sum = 0
+    count = 0
+    line_ages.each_pair do |file, lines|
+      lines.each do |time|
+        sum += time
+        count += 1
+      end
+    end
+    average_age = (Time.now.to_i - (sum.to_f / count)).to_i
+    puts time_duration(average_age)
+  end
+
+  def age_histogram
+    buckets = {
+      :year =>    {:description => 'Older than a year:', :count => 0},
+      :quarter => {:description => 'Older than a quarter:', :count => 0},
+      :month =>   {:description => 'Older than a month:', :count => 0},
+      :week =>    {:description => 'Older than a week:', :count => 0},
+      :day =>     {:description => 'Older than a day:', :count => 0},
+      :lt_day =>  {:description => 'Newer than a day:', :count => 0},
+    }
+    num_lines = 0
+    line_ages.each_pair do |file, lines|
+      lines.each do |time|
+        num_lines += 1
+        time = Time.now.to_i - time
+        if time > (365 * 86400)
+          buckets[:year][:count] += 1
+        elsif time > (90 * 86400)
+          buckets[:quarter][:count] += 1
+        elsif time > (30 * 86400)
+          buckets[:month][:count] += 1
+        elsif time > (7 * 86400)
+          buckets[:week][:count] += 1
+        elsif time > 86400
+          buckets[:day][:count] += 1
+        else
+          buckets[:lt_day][:count] += 1
+        end
+      end
+    end
+
+    table = []
+    [:year, :quarter, :month, :week, :day, :lt_day].each do |bucket|
+      table << [
+        buckets[bucket][:description],
+        buckets[bucket][:count],
+        sprintf("%.2f%%", (buckets[bucket][:count] / num_lines.to_f) * 100)
+      ]
+    end
+
+    output_table table
+  end
+
   def oldest_files
     average_age = {}
     blame do |file|
@@ -230,6 +285,19 @@ class GitExplore
     @files
   end
 
+  def line_ages
+    files = {}
+    blame do |file|
+      filename = nil
+      file.each do |line|
+        filename = line['filename'] if filename.nil?
+        files[filename] ||= []
+        files[filename] << line['author-time'].to_i
+      end
+    end
+    files
+  end
+
   def log
     unless @log
       @log = {}
@@ -317,6 +385,39 @@ class GitExplore
 
   def root_dir
     @root_dir ||= %x{git rev-parse --show-toplevel}.chomp
+  end
+
+  def time_duration(unix_timestamp)
+    components = {}
+    components[:minute] = {:size => 60}
+    components[:hour] = {:size => components[:minute][:size] * 60}
+    components[:day] = {:size => components[:hour][:size] * 24}
+    components[:month] = {:size => components[:day][:size] * 30}
+    components[:year] = {:size => components[:day][:size] * 365}
+
+    order = [:year, :month, :day, :hour, :minute, :second]
+
+    order.each do |part|
+      if components[part] && components[part][:size]
+        while unix_timestamp >= components[part][:size]
+          components[part][:count] ||= 0
+          components[part][:count] += 1
+          unix_timestamp -= components[part][:size]
+        end
+      else
+        components[part] ||= {}
+        components[part][:count] = unix_timestamp
+      end
+    end
+
+    description = ""
+    order.each do |part|
+      if components[part][:count]
+        plural = components[part][:count] == 1 ? '' : 's'
+        description += "#{components[part][:count]} #{part}#{plural}, "
+      end
+    end
+    return description
   end
 
   def valid_actions
