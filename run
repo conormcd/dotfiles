@@ -14,7 +14,8 @@ cd control
 export OS=$(os)
 
 # Figure out which machine this is and include the config for that machine.
-case $(hostname) in
+. lib/machine_detection
+case $(machine_id) in
 	(mcdermottr.vm.bytemark.co.uk)
 		# Personal laptop
 		export GIT_EMAIL="conor@mcdermottroe.com"
@@ -25,7 +26,7 @@ case $(hostname) in
 		export GIT_EMAIL="conor@mcdermottroe.com"
 		. machine/osx-personal
 		;;
-	(Conors-MacBook-Air.local)
+	(198B39C6-0787-5D18-8061-BDB34964C5A6)
 		# Work laptop
 		export GIT_EMAIL="cmcdermottroe@engineyard.com"
 		. machine/osx-work

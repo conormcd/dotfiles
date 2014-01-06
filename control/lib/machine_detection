@@ -1,0 +1,13 @@
+# vim:ft=sh
+
+machine_id() {
+    if cmd_exists system_profiler; then
+        machine_id_from_system_profiler
+    else
+        hostname
+    fi
+}
+
+machine_id_from_system_profiler() {
+    system_profiler -detailLevel basic | grep '^ *Hardware UUID: ' | sed -e 's/^ *Hardware UUID: //'
+}
