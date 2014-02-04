@@ -11,6 +11,7 @@
 . package/python
 . package/ruby
 . package/tmux
+. package/tshark
 . package/vim
 . package/watch
 . package/wget

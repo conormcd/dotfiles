@@ -1,0 +1,10 @@
+# vim:ft=sh
+
+case $(os) in
+	(OSX)
+		package wireshark
+		;;
+	(Debian)
+		package tshark
+		;;
+esac
