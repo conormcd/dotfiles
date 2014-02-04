@@ -1,0 +1,10 @@
+# vim:ft=sh
+
+case $(os) in
+	(Debian)
+		package libimage-exiftool-perl
+		;;
+	(*)
+		package exiftool
+		;;
+esac
