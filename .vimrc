@@ -7,7 +7,7 @@ if v:version < 703 || (v:version == 703 && !has('patch584'))
 endif
 
 call pathogen#infect()			" Load all the things in .vimrc/bundle
-call pathogen#helptags()		" Generate all the docs
+" call pathogen#helptags()		" Generate all the docs
 filetype plugin indent on		" Use the filetype detection magic
 syntax on						" Switch syntax highlighting on
 set ofu=syntaxcomplete#Complete	" Use omnicomplete

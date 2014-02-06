@@ -34,6 +34,9 @@ export PERL_MM_OPT="INSTALL_BASE=$HOME/.perl5lib"
 export PERL5LIB="$HOME/.perl5lib/lib/perl5/darwin-2level:$HOME/.perl5lib/lib/perl5"
 export PATH="$PATH:/Users/conor/.perl5lib/bin"
 
+# Speed up Command-T vim plugin
+export RUBYLIB=$HOME/.vim/bundle/Command-T/ruby
+
 # Include completion files
 if [[ -f /etc/bash_completion ]]; then
     . /etc/bash_completion
@@ -45,17 +48,6 @@ if [[ -d ~/.bash/completion ]]; then
     for cmpl in $(find ~/.bash/completion -type f); do
         . ${cmpl}
     done
-fi
-
-# Python bits
-if which virtualenv > /dev/null 2>&1; then
-    export WORKON_HOME=~/.virtualenvs
-    export PIP_RESPECT_VIRTUALENV=true
-    export PIP_VIRTUALENV_BASE=$WORKON_HOME
-    mkdir -p $WORKON_HOME
-    if which virtualenvwrapper.sh > /dev/null 2>&1; then
-        . $(which virtualenvwrapper.sh)
-    fi
 fi
 
 # Make a large history and share it between all sessions *and* with tcsh
@@ -91,28 +83,20 @@ rebuild_prompt() {
 
     # Make a colored git branch for inclusion in the prompt
     branch=$(__git_ps1 '%s')
-    remote=$(git remote -v 2> /dev/null | grep '^origin.*fetch')
-    if [[ ${remote} =~ "github" ]]; then
-        owner=$(echo ${remote} | cut -d: -f2 | cut -d/ -f1)
-        if [[ ${owner} == "conormcd" ]]; then
-            if [[ ${branch} =~ "master" ]]; then
-                branch="${red}${branch}${host_color} "
+    if [[ -n ${branch} ]]; then
+        remote=$(git remote -v 2> /dev/null | grep '^origin.*fetch')
+        if [[ ${remote} =~ "github" ]]; then
+            if [[ ${remote} == ":conormcd/" ]]; then
+                if [[ ${branch} =~ "master" ]]; then
+                    branch="${red}${branch}${host_color} "
+                else
+                    branch="${green}${branch}${host_color} "
+                fi
             else
-                branch="${green}${branch}${host_color} "
+                branch="${red}${branch}${host_color} "
             fi
-        else
-            branch="${red}${branch}${host_color} "
-        fi
-    elif [[ ${branch} ]]; then
-        branch="${branch} "
-    fi
-
-    # Do the same for virtualenv
-    virtualenv=""
-    if which virtualenvwrapper.sh > /dev/null 2>&1; then
-        virtualenv=$(lsvirtualenv)
-        if [[ "X${virtualenv}X" != "XX" ]]; then
-            virtualenv="{${virtualenv}} "
+        elif [[ ${branch} ]]; then
+            branch="${branch} "
         fi
     fi
 
