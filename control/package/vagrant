@@ -3,10 +3,10 @@
 . lib/file_management
 
 if ! cmd_exists VBoxManage; then
-    brew_cask_install virtualbox
+    package virtualbox
 fi
 if ! cmd_exists vagrant; then
-    brew_cask_install vagrant
+    package vagrant
     cmd vagrant plugin install vagrant-aws
     cmd vagrant plugin install vagrant-berkshelf
     cmd vagrant plugin install vagrant-cachier
