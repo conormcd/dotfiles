@@ -1,5 +1,7 @@
 # vim:ft=sh
 
+. lib/file_management
+
 case $(os) in
     (Debian)
         package vim-nox

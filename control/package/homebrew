@@ -1,4 +1,7 @@
 # vim:ft=sh
+
+. lib/file_management
+
 if [ "$(os)" = "OSX" ]; then
     if ! cmd_exists brew; then
         . package/xcode

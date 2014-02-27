@@ -1,4 +1,7 @@
 # vim:ft=sh
+
+. lib/file_management
+
 if ! cmd_exists VBoxManage; then
     brew_cask_install virtualbox
 fi

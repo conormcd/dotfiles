@@ -1,5 +1,7 @@
 # vim:ft=sh
 
+. lib/file_management
+
 # Create a function to allow other packages bring in bash completions
 if ! function_exists bash_completion; then
 	bash_completion() {

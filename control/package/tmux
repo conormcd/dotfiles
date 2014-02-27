@@ -1,4 +1,6 @@
 # vim:ft=sh
 
+. lib/file_management
+
 package tmux
 dotfile .tmux.conf

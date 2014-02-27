@@ -1,5 +1,7 @@
 # vim:ft=sh
 
+. lib/file_management
+
 if ! function_exists apt_install; then
     apt_install() {
         local package=$1

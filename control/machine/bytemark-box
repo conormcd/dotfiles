@@ -1,4 +1,7 @@
 # vim:ft=sh
+
+. lib/file_management
+
 . machine/common
 
 . package/mutt

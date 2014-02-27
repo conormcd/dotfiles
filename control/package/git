@@ -1,5 +1,7 @@
 # vim:ft=sh
 
+. lib/file_management
+
 package git
 
 # Config files
