@@ -1,0 +1,9 @@
+# vim:ft=sh
+
+if ! function_exists app_store_install; then
+	app_store_install() {
+		if [ ! -d $* ]; then
+			echo "$* is not installed, use the App Store to get it."
+		fi
+	}
+fi

@@ -1,0 +1,5 @@
+# vim:ft=sh
+
+. package/app_store
+
+app_store_install /Applications/Pages.app

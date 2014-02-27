@@ -2,9 +2,12 @@
 
 . machine/osx
 
+. package/airmail
 . package/apt-cacher-ng
 . package/ec2-api-tools
 . package/mysql
 . package/postgresql
 . package/redis
+. package/slack
+. package/stay
 . package/vagrant

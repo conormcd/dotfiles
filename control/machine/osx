@@ -2,11 +2,18 @@
 
 . machine/common
 
+. package/1password
 . package/chrome
 . package/dropbox
 . package/hub
 . package/iterm2
+. package/keynote
 . package/mou
 . package/nginx
+. package/numbers
+. package/pages
+. package/pixelmator
 . package/php
 . package/skype
+. package/tweetbot
+. package/xcode
