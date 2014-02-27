@@ -1,5 +1,3 @@
 # vim:ft=sh
 
 . machine/osx
-
-. package/php

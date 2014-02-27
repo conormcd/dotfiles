@@ -7,4 +7,6 @@
 . package/hub
 . package/iterm2
 . package/mou
+. package/nginx
+. package/php
 . package/skype
