@@ -21,7 +21,7 @@ case $(machine_id) in
 		export GIT_EMAIL="conor@mcdermottroe.com"
 		. machine/bytemark-box
 		;;
-	(erbium.local)
+	(F2B6560D-355B-5958-99BC-D9CEB875935D)
 		# Personal laptop
 		export GIT_EMAIL="conor@mcdermottroe.com"
 		. machine/osx-personal
