@@ -5,6 +5,7 @@
 . machine/common
 
 . package/mutt
+. package/tshark
 
 binfile bin/ipsort
 binfile bin/mailtail
