@@ -43,11 +43,11 @@ case $(os) in
         ;;
     (OSX)
         brew_tap josegonzalez/php
-        package php54 php54 --with-mysql --with-pgsql --with-fpm
-        package php54-apc
-        package php54-imagick
-        package php54-xdebug
-        package php54-xhprof
+        package php55 php55 --with-mysql --with-pgsql --with-fpm
+        package php55-apcu
+        package php55-imagick
+        package php55-xdebug
+        package php55-xhprof
 
         pear_channel pear.pdepend.org
         pear_channel pear.phpmd.org
