@@ -13,7 +13,6 @@
 . package/numbers
 . package/pages
 . package/pixelmator
-. package/php
 . package/skype
 . package/tweetbot
 . package/xcode
