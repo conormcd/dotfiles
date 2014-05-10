@@ -28,6 +28,7 @@ HISTFILE="${HOME}/.history"
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 export LANG=en_IE.UTF-8
 export LC_COLLATE=C
+export LESS=-FXRS
 export PERL_LOCAL_LIB_ROOT="$HOME/.perl5lib"
 export PERL_MB_OPT="--install_base $HOME/.perl5lib"
 export PERL_MM_OPT="INSTALL_BASE=$HOME/.perl5lib"
