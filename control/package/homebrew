@@ -44,7 +44,7 @@ if [ "$(os)" = "OSX" ]; then
             fi
 
             if [ -e ${cellar} -a ${out_of_date} -eq 1 -a ${call_brew_outdated} -eq 1 ]; then
-                cmd touch ${cellar}
+                touch ${cellar}
             fi
 
             return ${out_of_date}
