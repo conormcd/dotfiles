@@ -16,6 +16,7 @@ if [ "$(os)" = "OSX" ]; then
             cmd brew update
         fi
     fi
+    binfile bin/brew-orphans.rb
     binfile bin/brew-which-package.rb
 
     if ! function_exists brew_outdated; then
