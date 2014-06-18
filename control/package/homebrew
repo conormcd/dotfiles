@@ -5,7 +5,7 @@
 if [ "$(os)" = "OSX" ]; then
     if ! cmd_exists brew; then
         . package/xcode
-        cmd ruby -e "$(curl -fsSL https://raw.github.com/mxcl/homebrew/master/Library/Contributions/install_homebrew.rb)"
+        cmd ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
         if ! cmd_exists brew; then
             abort "Failed to install homebrew."
         fi
