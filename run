@@ -26,7 +26,7 @@ case $(machine_id) in
 		export GIT_EMAIL="conor@mcdermottroe.com"
 		. machine/osx-personal
 		;;
-	(198B39C6-0787-5D18-8061-BDB34964C5A6)
+	(198B39C6-0787-5D18-8061-BDB34964C5A6|A01C25F1-845C-5D56-BC77-3F644CCAC650)
 		# Work laptop
 		export GIT_EMAIL="cmcdermottroe@engineyard.com"
 		. machine/osx-work
