@@ -4,6 +4,7 @@
 
 . package/airmail
 . package/apt-cacher-ng
+. package/polipo
 . package/slack
 . package/stay
 . package/vagrant
