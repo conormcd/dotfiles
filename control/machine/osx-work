@@ -8,3 +8,4 @@
 . package/slack
 . package/stay
 . package/vagrant
+. package/zoom
