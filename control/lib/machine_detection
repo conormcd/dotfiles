@@ -9,5 +9,10 @@ machine_id() {
 }
 
 machine_id_from_system_profiler() {
-    system_profiler -detailLevel basic | grep '^ *Hardware UUID: ' | sed -e 's/^ *Hardware UUID: //'
+    local _cache_file=~/.dotfiles_machine_id
+    if [ ! -f ${_cache_file} ]; then
+        system_profiler -detailLevel basic | \
+            awk '/Hardware UUID/ { print $3; exit }' > ${_cache_file}
+    fi
+    cat ${_cache_file}
 }
