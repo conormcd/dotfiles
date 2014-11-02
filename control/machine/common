@@ -2,7 +2,6 @@
 
 . package/bash
 . package/curl
-. package/exiftool
 . package/git
 . package/gnupg
 . package/nmap
