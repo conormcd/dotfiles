@@ -28,17 +28,36 @@ if ! function_exists git_repo; then
 		if [ -d ${repo_dir} ]; then
 			local fetch_head="${repo_dir}/.git/FETCH_HEAD"
 			if [ ! -e ${fetch_head} ]; then
-				(cd ${repo_dir} && cmd git pull origin ${branch})
+				_git_repo_freshen ${repo_dir} ${branch}
 			elif [ $(file_age ${fetch_head}) -gt ${ttl} ]; then
-				(cd ${repo_dir} && cmd git pull origin ${branch})
+				_git_repo_freshen ${repo_dir} ${branch}
 			fi
 		else
-			cmd git clone --recursive ${repo} ${repo_dir}
-			if dry_run; then
-				echo git checkout ${branch}
-			else
-				(cd ${repo_dir} && cmd git checkout ${branch})
-			fi
+			_git_repo_checkout ${repo} ${repo_dir} ${branch}
 		fi
+	}
+
+	_git_repo_checkout() {
+		local repo=$1
+		local repo_dir=$2
+		local branch=$3
+
+		cmd git clone --recursive ${repo} ${repo_dir}
+		if dry_run; then
+			echo git checkout ${branch}
+		else
+			(cd ${repo_dir} && cmd git checkout ${branch})
+		fi
+	}
+
+	_git_repo_freshen() {
+		local repo_dir=$1
+		local branch=$2
+
+		(
+			cd ${repo_dir} && \
+				cmd git pull origin ${branch} && \
+				cmd git submodule update --init --recursive
+		)
 	}
 fi
