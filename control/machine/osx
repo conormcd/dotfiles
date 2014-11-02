@@ -5,7 +5,6 @@
 . package/1password
 . package/chrome
 . package/dropbox
-. package/hub
 . package/iterm2
 . package/keynote
 . package/mou
