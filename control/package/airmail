@@ -2,4 +2,4 @@
 
 . package/app_store
 
-app_store_install /Applications/Airmail.app
+app_store_install /Applications/Airmail\ 2.app
