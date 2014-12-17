@@ -26,7 +26,7 @@ export BLOCKSIZE=K
 export EDITOR=vim
 HISTFILE="${HOME}/.history"
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-export JAVA_HOME=$(/usr/libexec/java_home)
+export JAVA_HOME=$(test -x /usr/libexec/java_home && /usr/libexec/java_home)
 export LANG=en_IE.UTF-8
 export LC_COLLATE=C
 export LESS=-FXRS
