@@ -2,6 +2,7 @@
 # Config commands
 #
 auto_view text/html
+alternative_order text/plain text
 mailboxes `find ~/Maildir -type d -name cur \! -empty -prune | sort | perl -pe 'chomp; s/\/cur$/ /o'`
 
 #
