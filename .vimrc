@@ -103,3 +103,14 @@ function! PythonRules()
 	highlight TrailingSemiColon ctermbg=red guibg=red
 	match TrailingSemiColon /\;$/
 endfunction
+
+" Spot Ruby *file files.
+autocmd BufNewFile,BufRead Berksfile set filetype=ruby
+autocmd BufNewFile,BufRead Thorfile set filetype=ruby
+autocmd BufNewFile,BufRead Vagrantfile set filetype=ruby
+
+" Be more aggressive about detecting things as chef-related
+autocmd BufNewFile,BufRead */Cookbooks/*/\(attributes\|definitions\|libraries\|providers\|recipes\|resources\)/*.rb set filetype=ruby.chef
+autocmd BufNewFile,BufRead */Cookbooks/*/templates/*/*.erb set filetype=eruby.chef
+autocmd BufNewFile,BufRead */Cookbooks/*/metadata.rb set filetype=ruby.chef
+autocmd BufNewFile,BufRead */Cookbooks/*/.kitchen*.yml set filetype=eruby.yaml
