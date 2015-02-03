@@ -35,6 +35,7 @@ export PERL_MB_OPT="--install_base $HOME/.perl5lib"
 export PERL_MM_OPT="INSTALL_BASE=$HOME/.perl5lib"
 export PERL5LIB="$HOME/.perl5lib/lib/perl5/darwin-2level:$HOME/.perl5lib/lib/perl5"
 export PATH="$PATH:/Users/conor/.perl5lib/bin"
+export RBENV_ROOT=/usr/local/var/rbenv
 
 # Speed up Command-T vim plugin
 export RUBYLIB=$HOME/.vim/bundle/Command-T/ruby
@@ -152,4 +153,7 @@ fi
 
 if [ -f ~/.travis/travis.sh ]; then
     . ~/.travis/travis.sh
+fi
+if which rbenv > /dev/null; then
+    eval "$(rbenv init -)"
 fi
