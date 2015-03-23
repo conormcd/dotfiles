@@ -17,11 +17,11 @@ export OS=$(os)
 . lib/machine_detection
 case $(machine_id) in
 	(mcdermottr.vm.bytemark.co.uk)
-		# Personal laptop
+		# Bytemark box
 		export GIT_EMAIL="conor@mcdermottroe.com"
 		. machine/bytemark-box
 		;;
-	(F2B6560D-355B-5958-99BC-D9CEB875935D)
+	(F2B6560D-355B-5958-99BC-D9CEB875935D|73BF35E2-BAED-5CC8-8DDE-F3ADF8202198)
 		# Personal laptop
 		export GIT_EMAIL="conor@mcdermottroe.com"
 		. machine/osx-personal
