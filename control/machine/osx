@@ -7,6 +7,7 @@
 . package/dropbox
 . package/iterm2
 . package/keynote
+. package/leiningen
 . package/mou
 . package/numbers
 . package/pages
