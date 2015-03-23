@@ -42,7 +42,6 @@ vim_plugin_github tpope/vim-markdown
 vim_plugin_github jceb/vim-orgmode
 vim_plugin_github tpope/vim-pathogen
 vim_plugin_github Lokaltog/vim-powerline develop
-vim_plugin_github dougireton/vim-chef
 
 # Enable pathogen
 if [ ! -L ~/.vim/autoload ]; then
