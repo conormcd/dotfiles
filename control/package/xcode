@@ -1,9 +1,0 @@
-# vim:ft=sh
-
-. package/app_store
-
-app_store_install /Applications/Xcode.app
-
-if ! cmd_exists xcrun; then
-	abort "XCode command line tools are not installed."
-fi
