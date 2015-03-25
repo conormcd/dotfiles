@@ -157,3 +157,18 @@ fi
 if which rbenv > /dev/null; then
     eval "$(rbenv init -)"
 fi
+
+# Hack for boot2docker. If you use all the defaults when running `boot2docker
+# init` and `boot2docker up` then this should be fine. If not, you're on your
+# own.
+if which boot2docker > /dev/null 2>&1; then
+    if [[ "$(boot2docker status)" = "running" ]]; then
+        export DOCKER_CERT_PATH=~/.boot2docker/certs/boot2docker-vm
+        export DOCKER_TLS_VERIFY=1
+        export DOCKER_HOST=tcp://192.168.59.103:2376
+    else
+        unset DOCKER_CERT_PATH
+        unset DOCKER_TLS_VERIFY
+        unset DOCKER_HOST
+    fi
+fi
