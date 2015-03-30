@@ -17,7 +17,5 @@
 	enabled = 1
 [url "git@github.com:conormcd/"]
 	insteadOf = "git://github.com/conormcd/"
-[url "git@github.com:orchestra-io/"]
-	insteadOf = "git://github.com/orchestra-io/"
-[url "git@github.com:engineyard/"]
-	insteadOf = "git://github.com/engineyard/"
+[url "git@github.com:circleci/"]
+	insteadOf = "git://github.com/circleci/"
