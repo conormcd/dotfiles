@@ -45,6 +45,7 @@ vim_plugin_github Lokaltog/vim-powerline develop
 vim_plugin_github tpope/vim-fireplace
 vim_plugin_github guns/vim-clojure-static
 vim_plugin_github kien/rainbow_parentheses.vim
+vim_plugin_github vim-scripts/paredit.vim
 
 # Enable pathogen
 if [ ! -L ~/.vim/autoload ]; then
