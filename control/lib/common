@@ -59,6 +59,34 @@ package() {
     esac
 }
 
+launchctl_service() {
+    local package=$1
+    local plist=$2
+    local plist_name=$(basename ${plist})
+    local new_install=yes
+    local package_touched=no
+
+    for _pkg in ${HOMEBREW_TOUCHED_PACKAGES:-}; do
+        if [ ${_pkg} = ${package} ]; then
+            package_touched=yes
+        fi
+    done
+    if [ $(os) = "OSX" ]; then
+        if [ ${package_touched} = "yes" ]; then
+            if [ -f ${plist} ]; then
+                new_install=no
+            fi
+            cmd ln -sfv ${plist} ~/Library/LaunchAgents
+            if [ "${new_install}" = "no" ]; then
+                cmd launchctl unload ~/Library/LaunchAgents/${plist_name}
+            fi
+            cmd launchctl load ~/Library/LaunchAgents/${plist_name}
+        fi
+    else
+        echo "Skipping launchctl since we're not on OSX"
+    fi
+}
+
 warn() {
     if [ ${WARNINGS:-off} != "off" ]; then
         echo "WARN: $*" 1>&2

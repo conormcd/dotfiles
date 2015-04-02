@@ -77,6 +77,7 @@ if [ "$(os)" = "OSX" ]; then
                 fi
                 if [ ${package_installed} -eq 1 ]; then
                     if brew_outdated ${package}; then
+                        export HOMEBREW_TOUCHED_PACKAGES="${HOMEBREW_TOUCHED_PACKAGES:-} ${package}"
                         cmd brew upgrade ${package}
                     fi
                 else
@@ -84,6 +85,7 @@ if [ "$(os)" = "OSX" ]; then
                     if ! brew list ${package} > /dev/null 2>&1; then
                         if [ -n "$(brew search ${package} | grep ^${package}$)" ]; then
                             cmd brew install ${package}
+                            export HOMEBREW_TOUCHED_PACKAGES="${HOMEBREW_TOUCHED_PACKAGES:-} ${package}"
                         elif [ -n "$(brew cask search ${package} | grep ^${package}$)" ]; then
                             brew_cask_install ${package}
                         else
