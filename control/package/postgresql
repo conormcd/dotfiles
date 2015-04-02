@@ -1,3 +1,4 @@
 # vim:ft=sh
 
 package postgresql
+launchctl_service postgresql /usr/local/opt/postgresql/homebrew.mxcl.postgresql.plist

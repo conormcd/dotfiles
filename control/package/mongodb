@@ -1,0 +1,4 @@
+# vim:ft=sh
+
+package mongodb mongodb --with-openssl
+launchctl_service mongodb /usr/local/opt/mongodb/homebrew.mxcl.mongodb.plist

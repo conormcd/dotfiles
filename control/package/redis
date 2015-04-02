@@ -1,3 +1,4 @@
 # vim:ft=sh
 
 package redis
+launchctl_service redis /usr/local/opt/redis/homebrew.mxcl.redis.plist
