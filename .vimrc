@@ -80,6 +80,9 @@ let g:syntastic_php_phpcs_args = '--report=csv --standard=/Users/conor/.phpcs/ph
 " YouCompleteMe tweaks
 let g:ycm_autoclose_preview_window_after_completion=1
 
+" Dash support
+nmap <silent> <leader>d <Plug>DashSearch
+
 " Turn on spell checking
 setlocal spelllang=en_gb
 function! ToggleSpelling()
