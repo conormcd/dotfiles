@@ -167,3 +167,8 @@ if which boot2docker > /dev/null 2>&1; then
     unset DOCKER_HOST
     eval "$(boot2docker shellinit 2> /dev/null)"
 fi
+
+export CI=true
+export CIRCLE_ENV=development
+export CIRCLE_NREPL=true
+export NREPL_PORT=6005
