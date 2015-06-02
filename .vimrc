@@ -112,6 +112,9 @@ autocmd BufNewFile,BufRead Berksfile set filetype=ruby
 autocmd BufNewFile,BufRead Thorfile set filetype=ruby
 autocmd BufNewFile,BufRead Vagrantfile set filetype=ruby
 
+" Make sure that .cljx files are recognised as Clojure.
+autocmd BufNewFile,BufRead *.cljx setlocal filetype=clojure
+
 " Rainbow parens for Clojure
 " Remove Black Parens
 let g:rbpt_colorpairs = [
