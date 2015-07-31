@@ -1,6 +1,7 @@
 # vim:ft=sh
 
 . lib/file_management
+. package/git
 
 case $(os) in
     (Debian)
@@ -29,8 +30,8 @@ if ! function_exists vim_plugin; then
     }
 fi
 
-vim_plugin_github wincent/Command-T
-vim_plugin_github Valloric/YouCompleteMe
+# Needed for YouCompleteMe
+
 vim_plugin_github conormcd/matchindent.vim
 vim_plugin_github juvenn/mustache.vim
 vim_plugin_github scrooloose/syntastic
@@ -47,6 +48,12 @@ vim_plugin_github guns/vim-clojure-static
 vim_plugin_github kien/rainbow_parentheses.vim
 vim_plugin_github vim-scripts/paredit.vim
 vim_plugin_github rizzatti/dash.vim
+
+vim_plugin_github wincent/Command-T
+
+# YouCompleteMe is a litte more complex.
+package cmake
+vim_plugin_github Valloric/YouCompleteMe
 
 # Enable pathogen
 if [ ! -L ~/.vim/autoload ]; then

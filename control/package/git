@@ -56,8 +56,18 @@ if ! function_exists git_repo; then
 
 		(
 			cd ${repo_dir} && \
+				(
+					if [ -n "$(git status -s)" ]; then
+						cmd git clean -ffdx && \
+							cmd git checkout -- .
+					fi
+				) && \
 				cmd git pull origin ${branch} && \
-				cmd git submodule update --init --recursive
+				(
+					if [ -n "$(find . -name .gitmodules)" ]; then
+						cmd git submodule update --init --recursive
+					fi
+				)
 		)
 	}
 fi
