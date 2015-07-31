@@ -168,6 +168,15 @@ if which boot2docker > /dev/null 2>&1; then
     eval "$(boot2docker shellinit 2> /dev/null)"
 fi
 
+# Make sure the gpg-agent is running
+if ! pgrep gpg-agent > /dev/null 2>&1; then
+    eval $(gpg-agent --daemon --write-env-file ~/.gpg-agent-info)
+fi
+. ~/.gpg-agent-info
+export GPG_AGENT_INFO
+export GPG_TTY=$(tty)
+export LEIN_GPG=gpg2
+
 export CI=true
 export CIRCLE_ENV=development
 export CIRCLE_NREPL=true
