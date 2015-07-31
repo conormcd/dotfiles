@@ -1,0 +1,4 @@
+# vim:ft=sh
+
+package rabbitmq
+launchctl_service boot2docker /usr/local/opt/mongodb/homebrew.mxcl.rabbitmq.plist

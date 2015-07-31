@@ -1,0 +1,4 @@
+# vim:ft=sh
+
+package boot2docker
+launchctl_service boot2docker /usr/local/opt/mongodb/homebrew.mxcl.boot2docker.plist
