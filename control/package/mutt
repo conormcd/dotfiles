@@ -3,4 +3,11 @@
 . lib/file_management
 
 package mutt
-dotfile .muttrc
+case ${MACHINE} in
+    (bytemark-box)
+        dotfile .muttrc
+        ;;
+    (osx-work)
+        dotfile_encrypted .muttrc
+        ;;
+esac

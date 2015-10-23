@@ -19,16 +19,19 @@ case $(machine_id) in
 	(mcdermottr.vm.bytemark.co.uk)
 		# Bytemark box
 		export GIT_EMAIL="conor@mcdermottroe.com"
+		export MACHINE=bytemark-box
 		. machine/bytemark-box
 		;;
 	(F2B6560D-355B-5958-99BC-D9CEB875935D|73BF35E2-BAED-5CC8-8DDE-F3ADF8202198)
 		# Personal laptop
 		export GIT_EMAIL="conor@mcdermottroe.com"
+		export MACHINE=osx-personal
 		. machine/osx-personal
 		;;
 	(B48F750B-37D7-5C71-AA12-145EBE755716)
 		# Work laptop
 		export GIT_EMAIL="conor@circleci.com"
+		export MACHINE=osx-work
 		. machine/osx-work
 		;;
 	(*)
