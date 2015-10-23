@@ -10,6 +10,7 @@
 . package/procyon
 . package/rabbitmq
 . package/redis
+. package/shellcheck
 . package/slack
 . package/stay
 . package/vagrant
