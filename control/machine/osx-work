@@ -3,7 +3,6 @@
 . machine/osx
 
 . package/airmail
-. package/boot2docker
 . package/mongodb
 . package/postgresql
 . package/rabbitmq
