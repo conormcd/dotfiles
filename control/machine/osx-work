@@ -5,6 +5,7 @@
 . package/airmail
 . package/ant
 . package/awscli
+. package/libssh2
 . package/mongodb
 . package/node
 . package/postgresql
