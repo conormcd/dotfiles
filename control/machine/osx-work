@@ -4,6 +4,7 @@
 
 . package/airmail
 . package/ant
+. package/awscli
 . package/mongodb
 . package/postgresql
 . package/procyon
