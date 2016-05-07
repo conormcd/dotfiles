@@ -6,9 +6,10 @@ case $(os) in
         package php-apc
         ;;
     (OSX)
-        brew_tap josegonzalez/php
+        brew_tap homebrew/php
         package php56 php56 --with-postgresql
         package php56-apcu
+        package php56-intl
         package php56-memcached
         package php56-xdebug
         package php56-xhprof
