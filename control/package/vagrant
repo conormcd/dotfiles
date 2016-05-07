@@ -16,4 +16,3 @@ fi
 binfile bin/vm
 
 brew_tap homebrew/completions
-brew_install vagrant-completion
