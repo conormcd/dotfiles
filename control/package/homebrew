@@ -8,8 +8,10 @@ if [ "$(os)" = "OSX" ]; then
         if ! cmd_exists brew; then
             abort "Failed to install homebrew."
         fi
+        cmd brew tap homebrew/completions
         cmd brew tap homebrew/dupes
         cmd brew tap homebrew/versions
+        cmd brew tap Caskroom/cask
     else
         if [ $(file_age /usr/local/.git/FETCH_HEAD) -gt 3600 ]; then
             cmd brew update
@@ -49,12 +51,6 @@ if [ "$(os)" = "OSX" ]; then
 
             return ${out_of_date}
         }
-    fi
-
-    if [ ! -d /usr/local/Cellar/brew-cask ]; then
-        cmd brew install brew-cask
-    elif brew_outdated brew-cask; then
-        cmd brew upgrade brew-cask
     fi
 
     if ! function_exists brew_install; then
