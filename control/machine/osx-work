@@ -10,7 +10,6 @@
 . package/mutt
 . package/node
 . package/postgresql
-. package/procyon
 . package/rabbitmq
 . package/redis
 . package/shellcheck
