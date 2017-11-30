@@ -1,40 +1,39 @@
-set nocompatible				" Make Vim not act like vi
+set nocompatible                " Make Vim not act like vi
 
 " Just disable YouCompleteMe if there isn't a modern enough vim to handle it.
 " We don't really care for a warning on every startup.
 if v:version < 703 || (v:version == 703 && !has('patch584'))
-	let g:loaded_youcompleteme = 1
+    let g:loaded_youcompleteme = 1
 endif
 
-call pathogen#infect()			" Load all the things in .vimrc/bundle
-" call pathogen#helptags()		" Generate all the docs
-filetype plugin indent on		" Use the filetype detection magic
-syntax on						" Switch syntax highlighting on
-set ofu=syntaxcomplete#Complete	" Use omnicomplete
+call pathogen#infect()          " Load all the things in .vimrc/bundle
+filetype plugin indent on       " Use the filetype detection magic
+syntax on                       " Switch syntax highlighting on
+set ofu=syntaxcomplete#Complete " Use omnicomplete
 
-set autoindent				" Turn on automatic indenting
-set autoread				" Automatically read files if they've changed
-set backspace=2				" Allow you to backspace over everything
-set clipboard=unnamed		" Use the system clipboard
-set encoding=utf-8			" Try and keep things away from funny encodings
-set history=500				" Keep 500 lines of command line history
-set hlsearch				" Highlight searches
-set incsearch				" Incremental search
-set laststatus=2			" Always show the status line.
-set modelines=10			" Search the first 10 lines for modes
-set mouse=a					" Make the mouse work in all modes
+set autoindent              " Turn on automatic indenting
+set autoread                " Automatically read files if they've changed
+set backspace=2             " Allow you to backspace over everything
+set clipboard=unnamed       " Use the system clipboard
+set encoding=utf-8          " Try and keep things away from funny encodings
+set history=500             " Keep 500 lines of command line history
+set hlsearch                " Highlight searches
+set incsearch               " Incremental search
+set laststatus=2            " Always show the status line.
+set modelines=10            " Search the first 10 lines for modes
+set mouse=a                 " Make the mouse work in all modes
 set noexpandtab
-set nofoldenable			" Disable folding.
-set nowrap					" Turn off wrapping
-set ruler					" Show the cursor position all the time
-set smartcase				" Case insensitive when all lower case.
-set smartindent				" Set smart indenting on
+set nofoldenable            " Disable folding.
+set nowrap                  " Turn off wrapping
+set ruler                   " Show the cursor position all the time
+set smartcase               " Case insensitive when all lower case.
+set smartindent             " Set smart indenting on
 set shiftwidth=4
 set softtabstop=4
 set tabstop=4
-set title					" Put the name of the file in the terminal title
-set ttyfast					" Should be activated due to TERM, but anyway...
-set viminfo='20,\"50		" Use a viminfo file (remember 20 files, 50 lines)
+set title                   " Put the name of the file in the terminal title
+set ttyfast                 " Should be activated due to TERM, but anyway...
+set viminfo='20,\"50        " Use a viminfo file (remember 20 files, 50 lines)
 
 " Set a leader character for Command-T et al.
 let mapleader = ","
@@ -87,11 +86,11 @@ nmap <silent> <leader>d <Plug>DashSearch
 " Turn on spell checking
 setlocal spelllang=en_gb
 function! ToggleSpelling()
-	if &spell
-		set nospell
-	else
-		set spell
-	endif
+    if &spell
+        set nospell
+    else
+        set spell
+    endif
 endfunction
 
 " Highlight trailing whitespace
@@ -104,8 +103,8 @@ autocmd FileType markdown,plaintex,tex,text setlocal textwidth=78
 " Python-specific rules
 autocmd FileType python call PythonRules()
 function! PythonRules()
-	highlight TrailingSemiColon ctermbg=red guibg=red
-	match TrailingSemiColon /\;$/
+    highlight TrailingSemiColon ctermbg=red guibg=red
+    match TrailingSemiColon /\;$/
 endfunction
 
 " Spot Ruby *file files.
@@ -113,7 +112,9 @@ autocmd BufNewFile,BufRead Berksfile set filetype=ruby
 autocmd BufNewFile,BufRead Thorfile set filetype=ruby
 autocmd BufNewFile,BufRead Vagrantfile set filetype=ruby
 
-" Make sure that .cljx files are recognised as Clojure.
+" Make sure that .clj[csx] files are recognised as Clojure.
+autocmd BufNewFile,BufRead *.cljc setlocal filetype=clojure
+autocmd BufNewFile,BufRead *.cljs setlocal filetype=clojure
 autocmd BufNewFile,BufRead *.cljx setlocal filetype=clojure
 
 " Rainbow parens for Clojure
