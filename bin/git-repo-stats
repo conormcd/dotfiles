@@ -7,7 +7,7 @@ use Getopt::Long;
 
 my $PATH_PREFIX = '';
 my $EXCLUDE_BLANK_LINES = 0;
-my $EXCLUDE_PATTERN;
+my $EXCLUDE_PATTERN = '';
 GetOptions(
     "exclude-blank-lines" => \$EXCLUDE_BLANK_LINES,
     "exclude-pattern=s" => \$EXCLUDE_PATTERN

@@ -1,3 +1,5 @@
 # vim:ft=sh
 
-package iterm2 '/Applications/iTerm.app'
+if [ ! -d /Applications/iTerm.app ]; then
+  echo "Install iTerm2!"
+fi

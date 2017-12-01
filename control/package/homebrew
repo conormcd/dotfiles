@@ -13,7 +13,7 @@ if [ "$(os)" = "OSX" ]; then
         cmd brew tap homebrew/versions
         cmd brew tap Caskroom/cask
     else
-        if [ $(file_age /usr/local/.git/FETCH_HEAD) -gt 86400 ]; then
+        if [ "$(file_age /usr/local/Homebrew/.git/FETCH_HEAD)" -gt 86400 ]; then
             cmd brew update
         fi
     fi

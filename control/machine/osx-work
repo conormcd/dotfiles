@@ -3,17 +3,12 @@
 . machine/osx
 
 . package/airmail
-. package/ant
 . package/awscli
-. package/libssh2
 . package/mongodb
-. package/mutt
 . package/node
 . package/postgresql
 . package/rabbitmq
 . package/redis
 . package/shellcheck
 . package/slack
-. package/stay
-. package/vagrant
 . package/zoom

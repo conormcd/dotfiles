@@ -1,29 +1,3 @@
 # vim:ft=sh
 
 package python
-
-if ! function_exists pip_install; then
-    pip_install() {
-        local package=$1
-        if ! cmd_exists pip; then
-            case $(os) in
-                (Debian)
-                    package python-pip
-                    ;;
-                (*)
-                    # TODO: Install pip the hard way
-                    ;;
-            esac
-        fi
-        if [ -z "$(pip show ${package})" ]; then
-            if [ ${PIP_UPGRADED:-0} -eq 0 ]; then
-                cmd pip install --upgrade distribute
-                cmd pip install --upgrade pip
-                export PIP_UPGRADED=1
-            fi
-            cmd pip install ${package}
-        fi
-    }
-fi
-
-. package/virtualenv

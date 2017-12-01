@@ -246,7 +246,7 @@ class GitExplore
     Thread.new do
       lines = []
       line_data = {}
-      git = IO.popen("git #{mailmap} blame --line-porcelain #{file}")
+      git = IO.popen("git #{mailmap} blame -w --line-porcelain #{file}")
       git.each_line do |line|
         line.chomp!
         if line =~ /^[0-9a-f]+ \d+ \d+(?: \d+)?$/

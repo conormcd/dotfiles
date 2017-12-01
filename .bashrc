@@ -1,32 +1,15 @@
-# It's tempting to make this 077, but then installing stuff with sudo can
-# result in the undesirable effect of programs privately owned by root.
-umask 022
-
-# PROMPT_COMMAND is appended to so reset it to avoid making it huge if this
-# file is sourced multiple times.
+# PROMPT_COMMAND is appended to. Reset it to avoid making it huge if this file
+# is sourced multiple times.
 PROMPT_COMMAND=""
 
 # Make sure the path covers everything
-PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
-typeset -a potential_extra_dirs=( \
-    /opt/local/sbin \
-    /opt/local/bin \
-    `find /usr/local -maxdepth 4 -type d -path '*/texlive/*/bin/x86_64-darwin'` \
-    ~/bin \
-    ~/.rvm/bin \
-)
-for _dir in ${potential_extra_dirs[@]}; do
-    if [ -d ${_dir} ]; then
-        PATH="${PATH}:${_dir}"
-    fi
-done
+PATH="/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:${HOME}/bin"
 
 # Environment variables go here
 export BLOCKSIZE=K
 export EDITOR=vim
 HISTFILE="${HOME}/.history"
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-export JAVA_HOME=$(test -x /usr/libexec/java_home && /usr/libexec/java_home)
 export LANG=en_IE.UTF-8
 export LC_COLLATE=C
 export LESS=-FXRS
@@ -35,7 +18,12 @@ export PERL_MB_OPT="--install_base $HOME/.perl5lib"
 export PERL_MM_OPT="INSTALL_BASE=$HOME/.perl5lib"
 export PERL5LIB="$HOME/.perl5lib/lib/perl5/darwin-2level:$HOME/.perl5lib/lib/perl5"
 export PATH="$PATH:/Users/conor/.perl5lib/bin"
-export RBENV_ROOT=/usr/local/var/rbenv
+if [ -x /usr/libexec/java_home ]; then
+    _java_home=$(/usr/libexec/java_home)
+    if [[ $? = 0 && -n "${_java_home}" ]]; then
+        export JAVA_HOME="${_java_home}"
+    fi
+fi
 
 # Speed up Command-T vim plugin
 export RUBYLIB=$HOME/.vim/bundle/Command-T/ruby
@@ -103,7 +91,7 @@ rebuild_prompt() {
         fi
     fi
 
-    PS1="${host_color}\A [${virtualenv}${branch}\W]>${reset} "
+    PS1="${host_color}\A [${branch}\W]>${reset} "
 }
 
 # Git aliases
@@ -114,31 +102,17 @@ alias gdw="git diff -u -b -w"
 alias gdwc="git diff -u -b -w --cached"
 alias gl="pretty_git_log"
 alias gs="git status"
-alias master="git checkout master"
-alias poopd=popd
 pretty_git_log() {
     local _time="%C(green)%ar{%C(reset)"
     local _author="%C(bold blue)%aN%C(reset){"
     local _ref="%C(red)%d%C(reset)"
     local _message="%s"
-    local _repo_root=$(git rev-parse --show-toplevel)
-    local _mailmap=""
-
-    if [ -r ${_repo_root}/.mailmap ]; then
-        _mailmap=${_repo_root}/.mailmap
-    elif [ -r ${HOME}/.mailmap ]; then
-        _mailmap=${HOME}/.mailmap
-    fi
-    if [ -n "${_mailmap}" ]; then
-        _mailmap="-c mailmap.file=${_mailmap}"
-    fi
 
     git \
-        ${_mailmap} \
         log \
         --graph \
         --pretty="tformat:${_time}${_author}${_ref} ${_message}" \
-        $* \
+        "$@" \
         | sed -e 's/ ago{/{/' \
         | column -t -s '{' \
         | less -FXSR
@@ -151,26 +125,9 @@ elif [[ $OSTYPE =~ "linux" ]]; then
     alias ls='ls --color=auto --human-readable'
 fi
 
-if [ -f ~/.travis/travis.sh ]; then
-    . ~/.travis/travis.sh
-fi
-if which rbenv > /dev/null; then
-    eval "$(rbenv init -)"
-fi
-
-# Hack for boot2docker. If you use all the defaults when running `boot2docker
-# init` and `boot2docker up` then this should be fine. If not, you're on your
-# own.
-if which boot2docker > /dev/null 2>&1; then
-    unset DOCKER_CERT_PATH
-    unset DOCKER_TLS_VERIFY
-    unset DOCKER_HOST
-    eval "$(boot2docker shellinit 2> /dev/null)"
-fi
-
 # Make sure the gpg-agent is running
 if ! pgrep gpg-agent > /dev/null 2>&1; then
-    eval $(gpg-agent --daemon --write-env-file ~/.gpg-agent-info)
+    eval "$(gpg-agent --daemon --write-env-file ~/.gpg-agent-info)"
 fi
 . ~/.gpg-agent-info
 export GPG_AGENT_INFO
@@ -179,5 +136,4 @@ export LEIN_GPG=gpg2
 
 export CI=true
 export CIRCLE_ENV=development
-export CIRCLE_NREPL=true
 export NREPL_PORT=6005

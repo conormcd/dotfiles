@@ -1,124 +1,73 @@
-set nocompatible                " Make Vim not act like vi
+set nocompatible
 
-" Just disable YouCompleteMe if there isn't a modern enough vim to handle it.
-" We don't really care for a warning on every startup.
-if v:version < 703 || (v:version == 703 && !has('patch584'))
-    let g:loaded_youcompleteme = 1
-endif
+call pathogen#infect()
+filetype plugin indent on
+syntax on
 
-call pathogen#infect()          " Load all the things in .vimrc/bundle
-filetype plugin indent on       " Use the filetype detection magic
-syntax on                       " Switch syntax highlighting on
-set ofu=syntaxcomplete#Complete " Use omnicomplete
+set autoindent
+set autoread
+set backspace=eol,indent,start
+set clipboard=unnamed
+set complete=.,t
+set encoding=utf-8
+set history=500
+set hlsearch
+set incsearch
+set laststatus=2
+set modelines=10
+set mouse=a
+set nofoldenable
+set nowrap
+set ruler
+set smartindent
+set title
+set viminfo='50,\"50
 
-set autoindent              " Turn on automatic indenting
-set autoread                " Automatically read files if they've changed
-set backspace=2             " Allow you to backspace over everything
-set clipboard=unnamed       " Use the system clipboard
-set encoding=utf-8          " Try and keep things away from funny encodings
-set history=500             " Keep 500 lines of command line history
-set hlsearch                " Highlight searches
-set incsearch               " Incremental search
-set laststatus=2            " Always show the status line.
-set modelines=10            " Search the first 10 lines for modes
-set mouse=a                 " Make the mouse work in all modes
-set noexpandtab
-set nofoldenable            " Disable folding.
-set nowrap                  " Turn off wrapping
-set ruler                   " Show the cursor position all the time
-set smartcase               " Case insensitive when all lower case.
-set smartindent             " Set smart indenting on
-set shiftwidth=4
-set softtabstop=4
-set tabstop=4
-set title                   " Put the name of the file in the terminal title
-set ttyfast                 " Should be activated due to TERM, but anyway...
-set viminfo='20,\"50        " Use a viminfo file (remember 20 files, 50 lines)
-
-" Set a leader character for Command-T et al.
 let mapleader = ","
 
-" Make smartindent stop outdenting lines beginning with #
 inoremap # X#
-
-" F keys
-nmap <F7> :call ToggleSpelling()<CR>
-nmap <F8> :TagbarToggle<CR>
-
-" Undo search highlighting on enter
 nnoremap <CR> :nohlsearch<CR>
 
-" Set some syntax highlighting options.
-let c_space_errors = 1
-let g:clojure_align_subforms = 1
-let is_posix = 1
-let java_allow_cpp_keywords = 1
-let java_highlight_java_lang = 1
-let java_highlight_java_lang_ids = 1
-let java_space_errors = 1
-let jproperties_show_messages = 1
-let php_htmlInStrings = 1
-let php_sql_query = 1
-let python_highlight_all = 1
-
-" Put the cursor back where it was the last time we edited the file.
+autocmd BufNewFile,BufRead Berksfile set filetype=ruby
+autocmd BufNewFile,BufRead Thorfile set filetype=ruby
+autocmd BufNewFile,BufRead Vagrantfile set filetype=ruby
 autocmd BufReadPost *
   \ if line("'\"") > 0 && line("'\"") <= line("$") |
   \   exe "normal g`\"" |
   \ endif
-
-" Powerline customization
-let g:Powerline_symbols = 'fancy'
-call Pl#Theme#RemoveSegment('fileformat')
-call Pl#Theme#RemoveSegment('fileencoding')
-call Pl#Theme#RemoveSegment('filetype')
-
-" Syntastic tweaks
-let g:syntastic_c_compiler_options = ' -std=c99'
-let g:syntastic_php_phpcs_args = '--report=csv --standard=/Users/conor/.phpcs/phpcs.xml'
-
-" YouCompleteMe tweaks
-let g:ycm_autoclose_preview_window_after_completion=1
-
-" Dash support
-nmap <silent> <leader>d <Plug>DashSearch
-
-" Turn on spell checking
-setlocal spelllang=en_gb
-function! ToggleSpelling()
-    if &spell
-        set nospell
-    else
-        set spell
-    endif
-endfunction
-
-" Highlight trailing whitespace
-highlight TrailingWhitespace ctermbg=red guibg=red
-match TrailingWhitespace /\s\+$/
-
-" I want text wrapping for some file types
 autocmd FileType markdown,plaintex,tex,text setlocal textwidth=78
 
-" Python-specific rules
-autocmd FileType python call PythonRules()
-function! PythonRules()
-    highlight TrailingSemiColon ctermbg=red guibg=red
-    match TrailingSemiColon /\;$/
-endfunction
+" Language-specific syntax tweaks
+let g:markdown_fenced_languages = ['bash=sh', 'clojure', 'go', 'java', 'php', 'python', 'ruby', 'sh']
+let java_highlight_debug = 1
+let java_space_errors = 1
+let php_htmlInStrings = 1
+let php_sql_query = 1
+let python_space_error_highlight = 1
+let ruby_space_errors = 1
 
-" Spot Ruby *file files.
-autocmd BufNewFile,BufRead Berksfile set filetype=ruby
-autocmd BufNewFile,BufRead Thorfile set filetype=ruby
-autocmd BufNewFile,BufRead Vagrantfile set filetype=ruby
+"
+" Plugin configs from here down
+"
 
-" Make sure that .clj[csx] files are recognised as Clojure.
-autocmd BufNewFile,BufRead *.cljc setlocal filetype=clojure
-autocmd BufNewFile,BufRead *.cljs setlocal filetype=clojure
-autocmd BufNewFile,BufRead *.cljx setlocal filetype=clojure
+" PLUGIN:github.com/w0rp/ale
+let g:ale_completion_enabled = 1
+call ale#linter#Define('clojure', {
+\   'name': 'cljlint',
+\   'output_stream': 'stdout',
+\   'executable': 'cljlint',
+\   'command': 'cljlint %t',
+\   'callback': 'ale#handlers#unix#HandleAsError',
+\})
 
-" Rainbow parens for Clojure
-" Remove Black Parens
+" PLUGIN:github.com/rizzatti/dash.vim
+nmap <silent> <leader>d <Plug>DashSearch
+
+" PLUGIN:github.com/conormcd/matchindent.vim
+
+" PLUGIN:github.com/vim-scripts/paredit.vim
+
+" PLUGIN:github.com/kien/rainbow_parentheses.vim
 let g:rbpt_colorpairs = [
     \ ['brown',       'RoyalBlue3'],
     \ ['Darkblue',    'SeaGreen3'],
@@ -139,3 +88,35 @@ let g:rbpt_colorpairs = [
 let g:rbpt_max = 15
 autocmd Filetype clojure RainbowParenthesesActivate
 autocmd Syntax clojure RainbowParenthesesLoadRound
+
+" PLUGIN:github.com/ervandew/supertab
+let g:SuperTabCompletionContexts = ['ClojureContext', 's:ContextText', 's:ContextDiscover']
+let g:SuperTabContextDiscoverDiscovery = ["&completefunc:<c-x><c-u>", "&omnifunc:<c-x><c-o>"]
+let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
+function! ClojureContext()
+  let curline = getline('.')
+  let cnum = col('.')
+  let synname = synIDattr(synID(line('.'), cnum - 1, 1), 'name')
+  if curline =~ '(\S\+\%' . cnum . 'c' && synname !~ '\(String\|Comment\)'
+    return "\<c-x>\<c-o>"
+  endif
+endfunction
+
+" PLUGIN:github.com/vim-airline/vim-airline
+
+" PLUGIN:github.com/guns/vim-clojure-static
+let g:clojure_align_multiline_strings = 1
+let g:clojure_align_subforms = 1
+let g:clojure_maxlines = 100
+
+" PLUGIN:github.com/tpope/vim-commentary
+
+" PLUGIN:github.com/tpope/vim-endwise
+
+" PLUGIN:github.com/tpope/vim-fireplace
+
+" PLUGIN:github.com/tpope/vim-fugitive
+
+" PLUGIN:github.com/tpope/vim-git
+
+" PLUGIN:github.com/jamessan/vim-gnupg

@@ -1,12 +1,11 @@
 # vim:ft=sh
 
-package gnupg2 gpg
+package gnupg gpg
 package gpg-agent
 package pinentry-mac
 if [ ! -L /Applications/pinentry-mac.app ]; then
 	cmd brew linkapps pinentry-mac
 fi
-symlink /usr/local/bin/gpg2 /usr/local/bin/gpg
 
 mkdir_p ~/.gnupg
 dotfile .gnupg/gpg.conf
