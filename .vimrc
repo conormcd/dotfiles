@@ -120,3 +120,5 @@ let g:clojure_maxlines = 100
 " PLUGIN:github.com/tpope/vim-git
 
 " PLUGIN:github.com/jamessan/vim-gnupg
+
+" PLUGIN:github.com/tpope/vim-pathogen
