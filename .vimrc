@@ -52,6 +52,7 @@ let ruby_space_errors = 1
 
 " PLUGIN:github.com/w0rp/ale
 let g:ale_completion_enabled = 1
+let g:ale_fix_on_save = 1
 call ale#linter#Define('clojure', {
 \   'name': 'cljlint',
 \   'output_stream': 'stdout',
@@ -59,6 +60,9 @@ call ale#linter#Define('clojure', {
 \   'command': 'cljlint %t',
 \   'callback': 'ale#handlers#unix#HandleAsError',
 \})
+let g:ale_fixers = {
+\   'go': ['gofmt'],
+\}
 
 " PLUGIN:github.com/rizzatti/dash.vim
 nmap <silent> <leader>d <Plug>DashSearch
