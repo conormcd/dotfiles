@@ -4,11 +4,6 @@
 
 . package/airmail
 . package/awscli
-. package/mongodb
-. package/node
-. package/postgresql
-. package/rabbitmq
-. package/redis
 . package/shellcheck
 . package/slack
 . package/zoom
