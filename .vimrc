@@ -50,26 +50,29 @@ let ruby_space_errors = 1
 " Plugin configs from here down
 "
 
-" PLUGIN:github.com/w0rp/ale
-let g:ale_completion_enabled = 1
-let g:ale_fix_on_save = 1
-call ale#linter#Define('clojure', {
-\   'name': 'cljlint',
-\   'output_stream': 'stdout',
-\   'executable': 'cljlint',
-\   'command': 'cljlint %t',
-\   'callback': 'ale#handlers#unix#HandleAsError',
-\})
-let g:ale_fixers = {
-\   'go': ['gofmt'],
-\}
-
-" PLUGIN:github.com/rizzatti/dash.vim
-nmap <silent> <leader>d <Plug>DashSearch
-
 " PLUGIN:github.com/conormcd/matchindent.vim
 
-" PLUGIN:github.com/vim-scripts/paredit.vim
+" PLUGIN:github.com/ervandew/supertab
+let g:SuperTabCompletionContexts = ['ClojureContext', 's:ContextText', 's:ContextDiscover']
+let g:SuperTabContextDiscoverDiscovery = ["&completefunc:<c-x><c-u>", "&omnifunc:<c-x><c-o>"]
+let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
+function! ClojureContext()
+  let curline = getline('.')
+  let cnum = col('.')
+  let synname = synIDattr(synID(line('.'), cnum - 1, 1), 'name')
+  if curline =~ '(\S\+\%' . cnum . 'c' && synname !~ '\(String\|Comment\)'
+    return "\<c-x>\<c-o>"
+  endif
+endfunction
+
+" PLUGIN:github.com/fatih/vim-go
+
+" PLUGIN:github.com/guns/vim-clojure-static
+let g:clojure_align_multiline_strings = 1
+let g:clojure_align_subforms = 1
+let g:clojure_maxlines = 100
+
+" PLUGIN:github.com/jamessan/vim-gnupg
 
 " PLUGIN:github.com/kien/rainbow_parentheses.vim
 let g:rbpt_colorpairs = [
@@ -93,25 +96,8 @@ let g:rbpt_max = 15
 autocmd Filetype clojure RainbowParenthesesActivate
 autocmd Syntax clojure RainbowParenthesesLoadRound
 
-" PLUGIN:github.com/ervandew/supertab
-let g:SuperTabCompletionContexts = ['ClojureContext', 's:ContextText', 's:ContextDiscover']
-let g:SuperTabContextDiscoverDiscovery = ["&completefunc:<c-x><c-u>", "&omnifunc:<c-x><c-o>"]
-let g:SuperTabContextTextOmniPrecedence = ['&omnifunc', '&completefunc']
-function! ClojureContext()
-  let curline = getline('.')
-  let cnum = col('.')
-  let synname = synIDattr(synID(line('.'), cnum - 1, 1), 'name')
-  if curline =~ '(\S\+\%' . cnum . 'c' && synname !~ '\(String\|Comment\)'
-    return "\<c-x>\<c-o>"
-  endif
-endfunction
-
-" PLUGIN:github.com/vim-airline/vim-airline
-
-" PLUGIN:github.com/guns/vim-clojure-static
-let g:clojure_align_multiline_strings = 1
-let g:clojure_align_subforms = 1
-let g:clojure_maxlines = 100
+" PLUGIN:github.com/rizzatti/dash.vim
+nmap <silent> <leader>d <Plug>DashSearch
 
 " PLUGIN:github.com/tpope/vim-commentary
 
@@ -123,6 +109,18 @@ let g:clojure_maxlines = 100
 
 " PLUGIN:github.com/tpope/vim-git
 
-" PLUGIN:github.com/jamessan/vim-gnupg
+" PLUGIN:github.com/tpope/vim-rhubarb
 
-" PLUGIN:github.com/tpope/vim-pathogen
+" PLUGIN:github.com/w0rp/ale
+let g:ale_completion_enabled = 1
+call ale#linter#Define('clojure', {
+\   'name': 'cljlint',
+\   'output_stream': 'stdout',
+\   'executable': 'cljlint',
+\   'command': 'cljlint %t',
+\   'callback': 'ale#handlers#unix#HandleAsError',
+\})
+
+" PLUGIN:github.com/vim-airline/vim-airline
+
+" PLUGIN:github.com/vim-scripts/paredit.vim
