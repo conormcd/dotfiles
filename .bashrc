@@ -131,5 +131,5 @@ export GPG_TTY=$(tty)
 export LEIN_GPG=gpg2
 
 export CI=true
-export CIRCLE_ENV=development
+export CIRCLE_ENV=test
 export NREPL_PORT=6005
