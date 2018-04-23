@@ -25,9 +25,6 @@ if [ -x /usr/libexec/java_home ]; then
     fi
 fi
 
-# Speed up Command-T vim plugin
-export RUBYLIB=$HOME/.vim/bundle/Command-T/ruby
-
 # Include completion files
 if [[ -f /etc/bash_completion ]]; then
     . /etc/bash_completion
