@@ -124,9 +124,8 @@ fi
 
 # Make sure the gpg-agent is running
 if ! pgrep gpg-agent > /dev/null 2>&1; then
-    eval "$(gpg-agent --daemon --write-env-file ~/.gpg-agent-info)"
+    eval "$(gpg-agent --daemon)"
 fi
-. ~/.gpg-agent-info
 export GPG_AGENT_INFO
 export GPG_TTY=$(tty)
 export LEIN_GPG=gpg2
