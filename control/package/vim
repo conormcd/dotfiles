@@ -8,7 +8,7 @@ case $(os) in
         package vim-nox
         ;;
     (*)
-        package vim
+        package neovim
         ;;
 esac
 dotfile .vimrc
@@ -25,7 +25,7 @@ grep '^" PLUGIN:' "${DOTFILES_ROOT}/.vimrc" | \
     sed -e 's,^" PLUGIN:,,' | \
     while read -r plugin; do
         mkdir_p ~/.vim/bundle
-        git_repo "git://${plugin}.git" ~/.vim/bundle
+        git_repo "https://${plugin}.git" ~/.vim/bundle
     done
 
 # Add in the spellings

@@ -4,7 +4,4 @@
 . package/curl
 . package/git
 . package/gnupg
-. package/perl
-. package/python
-. package/ruby
 . package/vim

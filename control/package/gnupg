@@ -3,9 +3,6 @@
 package gnupg gpg
 package gpg-agent
 package pinentry-mac
-if [ ! -L /Applications/pinentry-mac.app ]; then
-	cmd brew linkapps pinentry-mac
-fi
 
 mkdir_p ~/.gnupg
 dotfile .gnupg/gpg.conf

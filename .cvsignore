@@ -2,3 +2,4 @@
 *.swp
 .idea
 tags
+.clj-kondo

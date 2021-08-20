@@ -2,8 +2,4 @@
 
 . machine/osx
 
-. package/airmail
-. package/awscli
 . package/shellcheck
-. package/slack
-. package/zoom

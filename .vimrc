@@ -70,7 +70,7 @@ endfunction
 " PLUGIN:github.com/guns/vim-clojure-static
 let g:clojure_align_multiline_strings = 1
 let g:clojure_align_subforms = 1
-let g:clojure_maxlines = 100
+let g:clojure_maxlines = 1000
 
 " PLUGIN:github.com/jamessan/vim-gnupg
 
@@ -113,13 +113,9 @@ nmap <silent> <leader>d <Plug>DashSearch
 
 " PLUGIN:github.com/w0rp/ale
 let g:ale_completion_enabled = 1
-call ale#linter#Define('clojure', {
-\   'name': 'cljlint',
-\   'output_stream': 'stdout',
-\   'executable': 'cljlint',
-\   'command': 'cljlint %t',
-\   'callback': 'ale#handlers#unix#HandleAsError',
-\})
+let g:ale_fix_on_save = 1
+let g:ale_fixers = {'rust': ['rustfmt']}
+let g:ale_linters = {'rust': ['rls','cargo','rustc']}
 
 " PLUGIN:github.com/vim-airline/vim-airline
 

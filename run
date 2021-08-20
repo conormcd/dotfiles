@@ -34,6 +34,12 @@ case $(machine_id) in
 		export MACHINE=osx-work
 		. machine/osx-work
 		;;
+	(2B55691B-F282-551A-8696-B4597BE4DE92)
+		# Work laptop
+		export GIT_EMAIL="conor@circleci.com"
+		export MACHINE=osx-work
+		. machine/osx-work
+		;;
 	(*)
 		abort "Unknown machine."
 		;;

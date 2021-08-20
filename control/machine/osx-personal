@@ -1,9 +1,3 @@
 # vim:ft=sh
 
 . machine/osx
-
-. package/flightradar24
-. package/imovie
-. package/iphoto
-. package/kindle
-. package/ledger

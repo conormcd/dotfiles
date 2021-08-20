@@ -17,12 +17,16 @@ export PERL_LOCAL_LIB_ROOT="$HOME/.perl5lib"
 export PERL_MB_OPT="--install_base $HOME/.perl5lib"
 export PERL_MM_OPT="INSTALL_BASE=$HOME/.perl5lib"
 export PERL5LIB="$HOME/.perl5lib/lib/perl5/darwin-2level:$HOME/.perl5lib/lib/perl5"
+export PATH="$PATH:/Users/conor/.cargo/bin"
 export PATH="$PATH:/Users/conor/.perl5lib/bin"
 if [ -x /usr/libexec/java_home ]; then
     _java_home=$(/usr/libexec/java_home)
     if [[ $? = 0 && -n "${_java_home}" ]]; then
         export JAVA_HOME="${_java_home}"
     fi
+fi
+if [ -d /usr/local/opt/ruby/bin ]; then
+    PATH="/usr/local/opt/ruby/bin:$PATH"
 fi
 
 # Include completion files
@@ -31,6 +35,11 @@ if [[ -f /etc/bash_completion ]]; then
 fi
 if [[ -f /usr/local/share/bash-completion/bash_completion ]]; then
     . /usr/local/share/bash-completion/bash_completion
+fi
+if [[ -d /usr/local/etc/bash_completion.d ]]; then
+    for cmpl in $(find /usr/local/etc/bash_completion.d -type f -o -type l); do
+        . ${cmpl}
+    done
 fi
 if [[ -d ~/.bash/completion ]]; then
     for cmpl in $(find ~/.bash/completion -type f); do
@@ -50,9 +59,6 @@ GIT_PS1_SHOWDIRTYSTATE="true"
 GIT_PS1_SHOWSTASHSTATE="true"
 GIT_PS1_SHOWUNTRACKEDFILES="true"
 GIT_PS1_SHOWUPSTREAM="auto"
-if [ -f /usr/local/share/git-core/contrib/completion/git-prompt.sh ]; then
-    . /usr/local/share/git-core/contrib/completion/git-prompt.sh
-fi
 PROMPT_COMMAND="rebuild_prompt; $PROMPT_COMMAND"
 rebuild_prompt() {
     # Color setup
@@ -133,3 +139,8 @@ export LEIN_GPG=gpg2
 export CI=true
 export CIRCLE_ENV=test
 export NREPL_PORT=6005
+alias vim=nvim
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion

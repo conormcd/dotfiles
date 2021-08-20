@@ -1,15 +1,3 @@
 # vim:ft=sh
 
 . machine/common
-
-. package/1password
-. package/chrome
-. package/dropbox
-. package/iterm2
-. package/keynote
-. package/leiningen
-. package/numbers
-. package/pages
-. package/pixelmator
-. package/skype
-. package/tweetbot
